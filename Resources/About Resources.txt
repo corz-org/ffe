@@ -1,0 +1,55 @@
+
+     #####    ###     ##  ### ########             ###     ##  ###    ###TM
+   #######  #######   ####### ########           #######   #######  #######
+  ###      ###   ###  ###         ###           ###   ###  ###     ###   ##
+  ###      ###   ###  ##       ###              ###   ###  ##      ###   ##
+   #######  #######   ##      ########    ###    #######   ##        ######
+     #####    ###     ##      ########    ###      ###     ##           ###
+                                                                     #####
+
+  ffe
+  an ffmpeg front-end for Windows
+
+  https://corz.org/windows/software/ffe/
+
+  (c) corz.org
+
+
+  Source Pack resources:
+
+
+    Icons/
+
+        All the icons for the program, about box, buttons. Along with coloured
+        versions and extra version for you to play with.
+
+
+    ffe.ini
+
+        This is the default ffe.ini file. It is included when compiling ffe and
+        any edits you make to this file will be reflected in the final binary.
+        Be careful!
+
+        It contains a huge amount of information about ffe's settings and
+        operation. Like the itstory.txt file (below) it's chock-full of tricks,
+        tips and secrets.
+
+        It also contains lots of settings that are not available from the GUI.
+
+        You can copy this ini file next to ffe.exe for portable operation.
+
+
+    ffe.png
+
+        This is your default drop window image, included at compile time.
+
+
+    image_pack_urls.txt
+
+        Some basic images ffe downloads for you to use as drop targets.
+
+
+    QuickStart.txt
+
+        If you are messing around with thes source code, it is unlikely you will
+        need this. This comes with the main distro. Included here, just in case.

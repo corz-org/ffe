@@ -1,0 +1,3090 @@
+
+     #####    ###     ##  ### ########             ###     ##  ###    ###TM
+   #######  #######   ####### ########           #######   #######  #######
+  ###      ###   ###  ###         ###           ###   ###  ###     ###   ##
+  ###      ###   ###  ##       ###              ###   ###  ##      ###   ##
+   #######  #######   ##      ########    ###    #######   ##        ######
+     #####    ###     ##      ########    ###      ###     ##           ###
+                                                                     #####
+
+  ffe
+  ffmpeg front-end for Windows
+
+  https://corz.org/windows/software/ffe/
+
+  (c) corz.org
+
+
+  itstory.. aka 'version history'.. aka 'changes'..
+  [known bugs at the bottom]
+
+        * Fixes
+        ~ Changes
+        + New stuff
+        D For Developers/Tinkerers
+
+
+      NOTE: source code is available. If you don't like something, change it.
+      Or write a nice comment on the ffe page, or mail me, and I might do it.
+
+
+
+
+  2.5.7.3   ("Deep Sea Creatures")
+
+  + Recursive operation.
+
+    You can now point ffe at some directory and have it process all the files
+    in that directory, as well as all the files inside any directories inside
+    there, and so on.
+
+    The original directory structure is recreated in the target directory, 
+    except now converted to your new format. You could convert an entire music
+    archive from FLAC to MP3 in a couple of clicks, for example.
+
+    As usual, @parent will resolve to the *current* file's parent directory.
+
+
+
+  2.5.6.6   ("Evil Pasta")
+
+  * Fixed missing linebreaks in console message output.
+
+  * Fixed shift-click on output label to open output directory, wherever that
+    might be.
+
+
+  2.5.6.3
+
+  ~ ffe now collapses the live output from ffmpeg, so instead of hundreds or
+    thousands of lines scrolling, you get one single line updating as ffmpeg
+    outputs it. In other words, you only see one line changing.
+
+    This is neater, and you can get to the initial ffmpeg output at any time.
+
+    The log still contains every line.
+
+  ~ ffe no longer forces the scroll to the bottom of the console window on every
+    update. Instead it scrolls once at the beginning, then it's up to you.
+
+  * Fixed the version checking. Oh, you may never find out about this!
+
+
+
+  2.5.5.6   ("Slippy McDuck")
+
+  * Finally fixed the weird behaviour on the output input. Once set, you won't
+    need to mess with it again, and it will no longer pick up legacy entries.
+
+    Essentially, you can drop file onto the input, and the output will transform
+    only the name part, leaving your output directory intact.
+
+  * Fixed the bug with MATOF. It will now always recalculate with fresh data.
+
+
+
+  2.5.4.*		("Eejit Soup")
+
+	*	Fixed bug where "\n" characters in notes from buttons weren't being
+		translated into actual line breaks.
+
+	~	Amongst other changes, ffe now enables Shift+Click on the output label
+		to open the output directory.
+
+
+	~	ffe will now remember your audio and video codec selection when you
+		toggle between auto- and custom codecs.
+
+	*	Fixed extra parameters input adding instead of replacing parameters in
+		certain circumstances.
+
+
+	~+	Improved help texts.
+
+
+	~	Minor dialog fixes, button placements, etc..
+
+
+	~	There is now console feedback when you right-click the output label (to
+		delete the output file) and it doesn't exist.
+
+	*	I think I had avoided this before because there was a minor issue with
+		Right-Now-Click actions being sent twice, which would have created
+		double entries in the console. This has now been fixed.
+
+
+	*	Fixed a bug where old output paths would return when enabling MATOF in
+		the GUI. It was easily sorted (dragging in folders is always best!) but
+		annoying.
+
+
+	*	For a while there, when launching with presets, you needed to ensure
+		that store_filepaths was enabled in your main prefs or inside the preset
+		itself. Sorry. Anyway, that is no longer the case.
+
+		If you have specified a inputfile(s) in your preset, ffe will use it,
+		regardless of your current store_filepaths setting. Consequently, you
+		can no longer set store_filepaths inside ffe.ini presets as that is
+		confusing. If file path exists, it will be used.
+
+		This doesn't affect GUI operation. Preset loading will respect your
+		current file paths setting.
+
+
+	*~	MATOF status is now saved to ffe.ini when you toggle the setting from
+		the main GUI**. As well as being the more expected behaviour, this also
+		prevents it leaping into action in presets where it is enabled in the
+		main prefs but unwanted in a preset fired at launch (go(), run(), etc.)
+		but hasn't been specifically disabled for that preset. In other words,
+		unless specifically set, MATOF will respect your main settings when
+		loading presets.
+
+		** Also goes for clicking in the output file input - MATOF is disabled
+		and this setting is saved immediately to ffe.ini.
+
+	~	Brought back the full version number for the about box.
+
+
+
+
+  2.5.3.*		("Sleeps with the Wishes")
+
+	+	At last, the codec -> extension mappings are inside ffe.ini.
+		No more magic transformations; you now have control.
+
+		They look something like this..
+
+			[mappings-video]
+			xvid=avi
+			mjpeg=avi
+			mpeg4=mp4
+			mpeg2=mpg
+			flash=flv
+			msvideo=wmv
+			vp=webm
+			av1=ivf
+
+		Codec search string on the left, extension to use on the right. Same
+		story for the audio mappings (for when you are outputting audio).
+
+		Anything not covered by a mapping in your preferences will use the
+		default extension. Add whatever you need. Sample sets will be copied
+		over to your ini when you upgrade to the this version of ffe.
+
+		This change also cleaned up some code, too.
+
+
+	+	Added the new mappings to the import/export facility. Curently they are
+		exported/imported with the "main settings".
+
+
+	~	The codec drop-down context menus will now be greyed out when auto-
+		codecs is enabled, to prevent you overwriting your carefully pruned
+		custom list with the BIG list from inside FFmpeg.
+
+
+	*	Fixed the renaming of presets (which I recently broke).
+
+
+
+  2.5.2.2	("Dark Spinach")
+
+
+	+	If you switch from recycle bin to permanent deletion, the one-time
+		delete warning is re-enabled.
+
+
+	+	If you hold down the <shift> key while you click the cropping label
+		(title), you can set the value for the number of frames to interrogate
+		for *this* cropping test.
+
+		If you right-click the label you can set a new value to use as the
+		default number of frames to test.
+
+	+	ffe will now report all the settings it is using when running an auto-
+		crop operation.
+
+	~	The default frames value (for auto-crop testing) has been increased to
+		100 but this might still not be enough to catch some content's borders.
+		A quick visual inspection will tell you roughly where the action starts.
+
+		FFmpeg interrogates the file fairly quickly so it's no problem testing
+		hundreds of frames or more.
+
+
+	~	When opening a report (rather than viewing in the console) with report
+		saving is disabled in your prefs, ffe will still fallback to using the
+		console, but it will now tell you why it did that, in case you didn't
+		realise you could change it.
+
+
+	+*	The "copy" option will now be automatically added to the Auto-Codec
+		lists. I forgot about this when I created the auto-codecs facility and
+		found myself having to type it. Sod that.
+
+
+	+	You can now set the color used for warnings. This isn't used a lot at
+		the moment (the file input will flash this colour if you click the label
+		to open the file's location and it doesn't exist) but may be used more
+		in the future.
+
+		This is normally red (ff0000), but you may have issues with red, so you
+		can now enter a standard RGB hex value, e.g..
+
+			warn_colour=C0DCC0
+
+		Which would give you "money green" warnings.
+
+
+	+	Added the "@params" @token, which is the value of your current extra
+		parameters input. This should make it easy for you to turn your ffplay
+		button into a preview button (which could show your video with your
+		current ffmpeg settings**), if you so desire; amongst possibly other
+		things.
+
+		** note, ffplay won't understand all your ffmpeg parameters in preview
+		  mode, but many it will, making for a useful facility.
+
+
+	*	Fixed the ffplay routine adding errant quotes around your arguments. It
+		made no difference until you added quotes of your own and things got a
+		little.. uncertain.
+
+
+	+~	Other improvements and additions to notes, documentation and reporting.
+
+
+
+  2.5.2.1   ("Song of Tar")
+
+
+	*	Fixed a bug where MATOF was being incorrectly enabled for single files
+		when the user had disabled MATOF (who does that!? Okay it turns out, a
+		few people..)
+
+	*	Fixed directory loading in presets and command-line. The following..
+
+			ffe.exe go(preset)  B:\Test\ffe\IN\*
+			ffe.exe go(preset)  B:\Test\ffe\IN\
+			ffe.exe go(preset)  B:\Test\ffe\IN
+
+		Will now all produce the same result, especially when using @tokens in
+		the outputfile setting.
+
+		See also: "Quirks & Caveats" section at the foot.
+
+	*	You can now override store_filepaths inside presets. I added this as a
+		workaround which I'm pretty sure is no longer required but I'll leave
+		in for now.
+
+	*	Fixed errant file loading into inputs when store_filepaths is disabled.
+
+	+	Added AV1 to the list of types that ffe will automatically switch the
+		extension of output files. In this case, "ivf".
+
+
+
+
+  2.5.1.4   ("Froggy Bacon")
+
+
+	+	Custom Button notes, if any, can now be piped to the console when you
+		click on a custom button.
+
+
+    +   You can put newlines in your preset notes. There is a new multi-line
+        notes editing dialog to facilitate this feature.
+
+        Although it should be transparent to you, if you want to roll your own,
+        ffe stores newlines as "\n" character sequences in its ini, like so..
+
+            notes=Disable the output!!!\n   And create the "OUT" directory!
+
+        Any spaces and tabs (yes, you can use tabs) you insert will be respected
+        as the console uses a monospaced font for output. I'm not expecting
+        anyone to put ASCII art in their ffe presets, but still, formatting can
+        be useful. Especially for warnings, caveats and gotchas.
+
+        Yes, if you put notes=<something> inside your main preset, it will act
+        as a welcome message, which you would see on Every Single Launch. This
+        is sooo tempting! Well, I should really, erm, "demonstrate" the feature!
+
+        Also, it would encourage folk to dive into their ffe.ini, always good.
+
+
+    +   You can set the prefix used when spewing out notes, or delete that
+        entirely.
+
+            notes_prefix="\nnotes:\n"
+
+        Again, \n = newline/linebreak. But this time it's manual-editing-only.
+
+        Note: the prefix is not used if the notes derive from the main [ffe]
+        preset; i.e. a welcome message.
+
+
+    +   When outputting files, ffe will now create the parent directory if it
+        doesn't exist. This is a user error!
+
+
+    +   Added a quick fade-out at exit. I would ideally like a TV power-off,
+        like the Hudl 2 does. Och well.
+
+
+    ~   Updated a few presets to include notes and improved parameters, e.g. the
+		FLAC preset now sets compression level to maximum and channels to
+		independent encoding. The notes tell you about this.
+
+
+    *   Fixed a bug with the main window not re-activating properly after
+        cancelling the FFmpeg Quick task edit dialog.
+
+    *   Fixed the Ampersand (&) translation on the custom buttons. They now
+        correctly show their keyboard accelerators underlined.
+
+    *   Fixed a bug where @tokens in the outputfile setting were being
+        translated too early and creating potentially invalid paths.
+
+    *   Fixed the errors in the "simple" presets. Ironic, eh.
+
+	*	Fixed a bug with the custom buttons grid not re-creating properly if you
+		disabled then immediately re-enabled custom buttons. Now the buttons
+		will continue to work as before.
+
+	*	Fixed a bug where ffe would ask you for an output file name if the
+		output directory could not be found during non-output operations, like
+		creating image sequences. Now ffe will simply allow FFmpeg to fail to
+		the console.
+
+
+
+  2.5.1.3   ("Diced Hedgehog")
+
+
+    +   Added "Auto-Crop", which basically uses FFmpeg's "cropdetect"
+        functionality to get the likely cropping values for the video and
+        inserts them, as if by magic, into the cropping inputs, ready for you to
+        encode the video.
+
+        You can get ffe to perform auto-crop by clicking either of the cropping
+        labels ("crop w / h" and "crop x / y"). Their ToolTip also lets you know
+        this.
+
+        In addition, the labels' text changes to a sky blue on mouse-over, a bit
+        like a URL does. I like this a lot and might get other controls to do
+        it. Right-Now-Click-enabled button labels could turn green on mouse-
+        over, perhaps ...
+
+        At any rate, once the crop values have been calculated successfully, ffe
+        reports the result to the console, to show you how clever it's been.
+
+
+    +   Added the sky blue mouse-over styles to the input and output labels.
+
+
+    ~   Improved the logic and formatting of the Custom and Short Test buttons,
+        which will now work exactly as expected under all conditions, adding
+        and removing parameters willy-nilly, even fixing up some user errors as
+        it goes (spaces missing between commands, if the user deleted them).
+
+
+    *   Fixed a bug where the HotKeys for the FFmpeg responses (y/n) weren't
+        being unset after use, so if you tried to use "y" or "n" in your
+        settings, perhaps whilst getting the next encode ready, nothing would
+        happen, as ffe was still sending these keys to FFmpeg (which were being
+        safely ignored). ffe will now release the HotKeys as soon as they are
+        used.
+
+    *   Fixed the docking for the copy output and clear output buttons, so if
+        you launched ffe with a wide window and resized it to a small window,
+        the buttons would slide right over the top of the search button. Now the
+        buttons will stay put.
+
+
+
+    D   cel.au3
+        I've improved CLT() and CRT() (and the wrapper, CBT()). They now return
+        the number of replacements made. You can also specify separate
+        characters for left and right when using CBT().
+
+
+
+
+
+  2.5.1.2   ("Static Orange Pips")
+
+
+    +   You can now keep notes inside a preset. Add
+
+        notes=<Your Text Here>
+
+        to any preset and on loading that preset, these notes will be spat out
+        into the console, and are a good place to put any information you might
+        need when working with the preset.
+
+        An example preset is included in the default ffe.ini.
+
+        There is also a new presets context menu item where you can set this for
+        the currently selected preset (select one first!)
+
+
+    *   Fixed the short test button not removing its command if you launched ffe
+        with a short test command at the start of the parameters input and
+        clicked the short text button. Clicking the button with a short test
+        command already in the extra arguments will now remove the command, as
+        expected.
+
+    *   Fixed a bug where if you had @tokens in your extra parameters, the would
+        be added to the MATOF string repeatedly.
+
+        There is still too much complexity in that old code. I'll need to get
+        the coding spanner out at some point and rewrite it.
+
+
+
+  2.5.1.1   ("Soft Landings On Sausages")
+
+
+    +   You can now Ctrl+Click the reset button to also clear the input+output
+        file paths. Shift+Click will clear ONLY the input+output file paths.
+
+
+    ~   Updated the automatic wildcard you get when dropping a folder from the
+        old-school "*.*", to the ultra-modern, sleek and so-cool, "*". Obviously
+        this was a massive amount of work and when you first try it you will
+        see why; it's like you've jumped straight into a science fiction movie.
+        All donations welcome.
+
+
+    +   You can now display a timer in the title bar when FFmpeg is running for
+        at-a-glance job time.
+
+        The toggle is in the app menu > visual prefs. You can switch this on and
+        off whilst FFmpeg is running. There is also a HotKey: Ctrl+R.
+
+        Think "Running Time"; it also uses "R" as the app menu accelerator.
+
+
+    ~   Improved the FFplay Quick Task button command handling so you can do
+        slightly more complex tasks. Remember to enclose all paths, including
+        @tokens, in "quotes".
+
+
+    +   Added a new macro, which is @arguments. This translates into the
+        arguments that will be fed to FFmpeg, as can be seen in your "Command-
+        line" display.
+
+        This is useful in the above new more complex FFplay tasks, e.g..
+
+            @arguments "@inputfile"
+
+        .. which will give you an instant preview of how your output file will
+        look, potentially saving you having to make short test clips.
+
+        All your cropping and such can be viewed instantly. BUT BEWARE.. This
+        won't work if you have parameters in your extra parameters input that
+        FFplay doesn't understand. Click the FFplay help button for more details.
+
+        If you are messing around, trying to get a working FFplay command, you
+        will probably want to display the output in the ffe console (F6).
+
+
+    *   Fixed saving the old output file to the exit settings when the user had
+        deleted the contents of the input (it was being read afresh).
+
+        Also the spurious saving of the inputfile when it was empty. Now, if you
+        reset everything and exit, your exit-settings is an empty preset, as
+        expected.
+
+    *   Fixed a glitch on reading the fall-back directory, which was being lost
+        somewhere in the matrix.
+
+
+
+  2.5.1.0   ("Melon Thrasher")
+
+
+    ~   Changed the cropping controls to use the new cropping format. I don't
+        know how I managed to miss skip this! Thanks for the heads-up, again..
+
+
+    D   ffe has been stripped of all "common" functions, that is, function which
+        also exist inside "Corz Essentials (Lite version)", aka. "cel.au3",
+        which is now included (in Resources/). Yes, I know! It's back!
+
+
+
+  2.5  ("I do requests, Bob")
+
+        It's here!
+
+    +   If you right-click the output file label, it deletes the output file.
+        You get a warning the first time you attempt this.
+
+    +   Added a couple of delete options for this (get to them @ app menu > ffe),
+        namely, always delete to recycle bin and always warn on delete.
+
+        NOTE: If you have wildcards in your file output, i.e. for a batch, e.g..
+
+            B:\AVIs\* [libx265][aac].mkv
+
+        .. and you had just created 10 video files, right-clicking the output
+        file label will DELETE ALL TEN FILES. In other words, the delete command
+        respects the wildcards.
+
+
+    +   Ctrl+click the the input file and output file selector buttons and you
+        instead open the directories with; if they (yet) exist; the files
+        selected. Otherwise just the folder. If the folder does not exist, the
+        corresponding input momentarily flashes red.
+
+        Ctrl+clicking the input file selector button performs precisely the same
+        action as clicking the label to the left of the input file.
+
+
+    *   Fixed a bug where if you had parameters in your extra parameter input at
+        startup (retained settings) and you clicked a custom button to *remove*
+        parameters, you would instead get a second set of the same parameters.
+
+        ffe will now correctly remove the existing parameters, as expected.
+
+    ~   Cleaned up the console output when editing buttons (shift-click the
+        button). It was just one long line of often confusing text. Now you can
+        see what's what.
+
+    *   Fixed the search box opening top-left when first opened.
+
+
+    ~   Moved the copy and clear button over next to the search button, which I
+        think makes more sense, and keeps it away from the "do it" button. Looks
+        neater, too. And some other minor GUI tweaks.
+
+
+    D   I notice my web host is deleting my new betas, since I switched over to
+        compiling with AutoIt beta, in fact. I'll go back to making binaries
+        with the release version, for now.
+
+
+
+        v2.4.9.5   (V2.5rc5)
+
+
+    +   Added a HotKey to suspend console output whilst FFmpeg is running. This
+        can be useful when running certain plugins that output a *lot* of data.
+
+        The HotKey is Alt+C. You can toggle back and forth, though note, if you
+        do *only* that, there's a high chance the output won't begin updating
+        again immediately on enabling. Just click anywhere, or stop switching it
+        on and off and go do something more constructive!
+
+        At the end of the job, the full log will be shown in the console, as
+        usual.
+
+
+    +   Added the ability to load multiple presets on the command-line. Simply
+        separate preset names with a pipe ("|") character..
+
+            run(Load Test Commands|Reverse Video+Audio) "B:\Test\ffe\*.mp4"
+
+        This example demonstrates the intended usage; to load "layers" of
+        commands. In this instance, the first preset loads pre-job commands to
+        empty my test folder and post-file commands to create media report on
+        all output files. It also sets the output folder for the following task
+        (which does not have this set). This base preset could be pre-loaded for
+        many different jobs.
+
+        Here is what the first preset might look like in your ini..
+
+            [Load Test Commands]
+            pre_job_commands_file=@datadir\pre-job-commands.bat
+            post_file_command=ffprobe.exe &quot;@outputfile&quot; > &quot;@ofilename_report.txt&quot;
+            run_pre_job_commands=true
+            run_post_file_command=true
+            outputfile=B:\Test\ffe\OUT
+
+
+        NOTE: If you attempt to use the pipe character in the name of your
+        presets, it will be replaced by an exclamation mark/point.
+
+        If you *already* have presets with pipe characters in their name, you
+        will need to change them to something else, like, "!". Also, seriously,
+        what were you thinking!? lol
+
+
+    +   Added transparency menu to the drop window context menu. There are 5%
+        graduations, from 0 to 100.
+
+        A note about drop window transparency and mouse hover:
+
+        When you hover you mouse over the drop window, the transparency will
+        switch to 50%. Unless your transparency is already between 45% and 65%,
+        in which case it will switch to 0% transparency (completely opaque), as
+        these  values are too close to 50% to see an obvious change on mouse-
+        over.
+
+        If this behaviour bugs you, you can set the mouse-over transparency
+        explicitly, using the following preference in your main settings..
+
+            drop_win_hover_transparency=<value>
+
+                <value> being from 0-100
+
+        The default is -1, which lets ffe work it out.
+
+
+    +   Added menu item for "Sort Presets" on the presets list itself, which
+        seems sensible. If you alter the setting, the menu item will change to
+        let you know that a restart is pending. Along with the corresponding app
+        menu item.
+
+        This facility has also been extended to all other app menus for settings
+        that require a restart..
+
+            Images on (some) Buttons
+            Show MouseOver ToolTip Help
+            Wrap Console Output
+            ToolTips over Console Output
+
+
+    ~   You no longer need to restart ffe (Alt+F5) to toggle the "log each job"
+        switch. I just noticed that this was required when coding the above. Now
+        ffe will grab the preference afresh before running jobs.
+
+
+    ~   I've updated ffe.ini to use UTF-8 WITH BOM, to prevent it being
+		transformed to ANSI during built-in InIWrite() functions. I *really*
+		need to look into writing all my own ini routines!
+
+
+    +   Add further error-checking and cleaned up some extraneous code.
+
+
+    ~   Removed the Proper Casing of the help label. It will now respect
+        whatever case you use in your title.
+
+
+    *   Fixed the custom selections on the input dialogs not being set (since
+        the beta this now needs to be done after the GUI_SHOW. Fair enough.).
+
+
+
+        v2.4.9.4   (V2.5rc4)
+
+
+    +   You can now enter full commands, with paths, in the help buttons, so
+        you can use them for help files from other programs, like ffprobe, or
+        FFplay. Or any program.
+
+        You can also use @tokens in the command for the help files, e.g..
+
+            @appdir\ffprobe.exe -h
+
+        I've set two of the demo help buttons to ffprobe and FFplay to
+        demonstrate this capability.
+
+
+    *   Fixed media reporting from URLs, which I carelessly broke recently.
+
+    *   Fixed the edit/add help buttons, which again I recently broke. Too many
+        late night sessions, clearly.
+
+    *   Fixed a bug where if you cancelled out of the Post-File command dialog
+        your post-file command would be set to "". You can still set the command
+        to empty if required, but cancelling the dialog won't do it for you.
+
+    *   ffe will now correctly set the "seen" flag for help texts if you edit a
+        help text button command. Now, if you command has changed, you get the
+        changes immediately.
+
+    *   Fixed a bug in one of the default custom buttons (it was using the old
+        format!!!)
+
+
+
+        v2.4.9.3   (V2.5rc3)
+
+    +   Added the facility to have automatically-populated codec drop-downs. ffe
+        will grab the latest encoders list from FFmpeg and parse it to produce a
+        list of audio and video codes for your codec drop-downs. Fairly groovy.
+
+        If you like to have *all* the available codecs in your drop-down, this
+        is for you.
+
+        If you like to switch binaries, this is for you, too. This automatic
+        list will reflect the codecs available in your current binary, as soon
+        as you switch binaries.
+
+        You can toggle Automatic Codec DropDowns from the app menu. When enabled
+        you lose the ability to add/remove items; indeed there is no context
+        menu for the codec drop-downs at all in this mode. There is no need to
+        add; you have ALL the available codecs in your drop-down!
+
+        You can switch between your own list and the full (auto) list without
+        destroying either. There is a HotKey (F7). You can keep your own list as
+        a set of "favourites", and toggle back-and-forth as required.
+
+        By the way, if you want a FULL list that you /can/ edit, here's a trick:
+
+            Enable Automatic Codec DropDowns (F7).
+
+            In your ffe.ini, set either/both codec lists to empty (and save it):
+
+                video_codecs=
+                audio_codecs=
+
+            Disable Automatic Codec DropDowns (F7).
+
+        On discovering the list(s) empty, ffe will populate the drop-down with a
+        set loaded from the current FFmpeg binary. Now you have the full list
+        AND it is editable.
+
+        |Note: If only one of your lists is empty, ffe will only populate that
+        one, leaving the other as-is.
+
+        NOTE: If you do not make an actual edit (right click the combo/drop-down
+        and add something, anything), even a quick fictional one, ffe will NOT
+        save the generated list to your ini file.
+
+
+    +   Added an App Menu (sub-menu) for the Post-File controls. Things you
+        previously had to hack into your presets manually. Namely..
+
+            post_file_run_style=direct/dos/shellexecute
+
+                ..How to run the command.
+
+            post_file_capture=true/false
+
+                .. Whether or not to capture output to the console.
+
+            post_file_show=true/false
+
+                .. Whether or not to hide the invoked program.
+
+        See "Post-File run options", further down this document, for more
+        details about what these settings do.
+
+
+
+        v2.4.9.2   (V2.5rc2)
+
+        Reorganised the source package and now using AutoIt Beta (3.3.15.3) to
+        build the binary.
+
+
+        <= v2.4.9.1   (V2.5rc1)
+
+
+    +   You can now set the pause HotKey to global, so you can pause/suspend
+        operation even whilst ffe is not at the front. This function is usually
+        set to the ScrlLock key which as you know, IS USED FOR NOTHING ELSE!
+
+        This can be toggled from the app menu.
+
+
+
+    ~+  Improved Find dialog (for searching in output).
+
+        The window will also now remain on top during searching. Window
+        position is now also saved and restored between Finds.
+
+        By the way, if you hold down the SHIFT key when you open the Find
+        dialog (with button/F3), you get Replace options. Quite why *you* would
+        want this, I have no idea. But there you have it.
+
+
+    +~  Your recent files list now works globally, which makes more sense
+        and less confusion. It will also automatically remove missing files
+        from the recent files list (in the tray menu). These operations,
+        like so much, are reported to the user in the console.
+
+
+    +   The recent files menu now shows only the base name of the files, as
+        opposed to the full path. Clearly this makes for much neater menus.
+        Way too much work went into this.
+
+
+    ~   The Custom Buttons are now even more configurable. Well, the
+        position, anyway. They have always been *completely* configurable!
+
+        I fixed some positional issues, too, so everything should line up
+        much better with the other buttons now, using the default settings.
+
+
+    ~   There is no longer any theoretical limit to the number of rows of
+        buttons you can create. You can fit six rows of buttons at 16px high
+        (with a slightly smaller font), if you want *lots* of buttons.
+
+
+    +   Added new @tokens:
+
+            @inputfile       =     Full path of input file.
+            @appdir          =     ffe program directory
+
+
+    +   By popular request, I added two new buttons to launch quick tasks for
+        ffmpeg and FFplay. These are of course configurable and to make them
+        truly useful they accept @tokens.
+
+        There are HotKeys for both buttons; F11 and F12, respectively.
+
+            I like the logic: F1 (create) ==> F12 (play)
+
+        Right-click the quick task button to edit the command. There is no
+        context menu, the right-click takes you directly to the input. I like
+        this system so much I've used it for the short test button, too. Enter..
+
+            Right-Now-Click!
+
+        Command output is piped to the console for ffmpeg commands and also
+        optionally** for FFplay commands (for simply watching a video, FFplay's
+        output is superior. For troubleshooting, choose ffe console)
+
+        ** You can toggle this setting from the app menu, and more quickly with
+        the HotKey: F6.
+
+        Like other controls, the ToolTip for these buttons updates to show you
+        the current setting. Another good reason to keep the ToolTips enabled.
+
+        There are *loads* of uses for these two wee buttons. Setting the FFplay
+        Quick Task to "@outputfile" seems like a no-brainer. The FFmpeg button
+        can be anything you fancy. How about a quick Video->MP3 converter
+        button..
+
+            -i "@inputfile" "@parent\@item.mp3"
+
+        Or one-click image extractor..
+
+            -i "@inputfile"  -r 1 "@parent\@item_%05d.png"
+
+        Imagination is the only limit! And the technical limitations of FFmpeg,
+        of course. The button can't make espresso. At least, not a decent cup.
+
+                                                ***
+
+        It should be noted that FFplay also plays MP3 and other audio files.
+        You get a spectrum analysis while audio plays (also available for video,
+        btw, check out the FFplay hotkeys - it's minimalist, but an excellent
+        little media player, nonetheless). Pretty neat.
+
+
+    +   Shortcut (*.lnk) files are now resolved when dragging and dropping
+        onto inputs/drop window.
+
+        If you *really* want the old behaviour (inserting the shortcut file,
+        rather than the linked file) hold down the SHIFT key while you drop.
+
+        Though note, in that case, if you have automatic reporting for
+        dropped items, you will, unless you have super-human reflexes and
+        timing, get a useless media report for the .lnk shortcut in your
+        default nfo viewer! Just, why?
+
+
+    +   You can now disable saving media reports. They will still appear in
+        your console output, but won't leave report files next to the media
+        files. Thank you! This setting is available from the app menu.
+
+
+    ~   When you click on the "input:" label (to the left of the file input)
+        rather than simply open the media file's containing folder, ffe will
+        now open the folder in Explorer with the media file *selected*. W00!
+
+        If the file in the input does not exist, the label flashes red,
+        instead.
+
+
+    +   The positions of ALL the wee dialogs** are now remembered after you
+        close them so they will open up in the same place next time.
+        NOTE: if you cancel or OK an empty value, the position is NOT saved.
+
+        ** Edit buttons, rename presets, set test length, etc., etc..
+
+
+    ~   Cleaned up the console output. There sure is a lot of it these days.
+
+
+    +   You can now disable ToolTips over the console output area (where they
+        can annoy) whilst retaining the useful tips over your other inputs and
+        controls..
+
+            allow_console_tooltip=false
+
+        This setting is available from the app menu >> Visual Preferences.
+
+
+    +   You can now have ffe run your drag-and-drop command on files supplied on
+        the command-line (or your retained settings), so when you launch ffe
+        with a file (e.g. from your SendTo menu), it will immediately produce a
+        media report, or just process it immediately, or whatever.
+
+        This setting is available from the app menu.
+
+
+    +   Added a new drag-and-drop command; "Play", which plays the dropped file
+        with FFplay, using your regular settings.
+
+
+    +   Also added "Generate", which generates an ffmpeg batch script, just like
+        shift-clicking "do it!" or running ffe with generate(preset) on the
+        command-line.
+
+
+    +   Added keyboard accelerators for ALL the app menu commands.
+        Hit Alt+Space and away you go!
+
+
+    +   Added a tray menu option to open the data folder. Cleaned up the
+        ordering of the tray menu, too. More logical.
+
+
+    +~  Added and improved help messages, console output and other useful
+        goodies. The window title is now used for more messages, too (e.g. when
+        you copy the console to the clipboard).
+
+
+    ~   If you launch ffe with the Shift key held down, it will ignore your
+        previous exit settings and use the defaults. This has been true for a
+        while but I didn't take a note of it anywhere.
+
+        This action will now also disable retaining exit settings so that any
+		existing exit settings will remain intact after re-launch, should you
+		wish to enable the facility again (Ctrl+E), the old settings will still
+		be there.
+
+        As a side note, exit settings are now retained in your ini up until
+        the point in time when they are replaced. If ffe gets killed for any
+        reason, your exit settings will not.
+
+
+    +   Also, if you have exit settings disabled, and then enable it, ffe will
+        offer to load your previously-stored exit settings (if you have any).
+
+
+    ~   In the case of freak naming conflicts during unattended operations,
+        ffe will now use a timestamp, rather than a random string, for the
+        conflicting name's suffix.
+
+
+    +   You can now add video and audio codec to the lists from directly within
+        the GUI (right-click the control). There are *hundreds* of these you can
+        add. Only popular formats are included by default. Go nuts. Or rather,
+        add what you need.
+
+
+    +   Similarly, you can now remove codecs the same way.
+
+
+    ~   ffe now stores backup ini files inside the subfolder; "Backup", inside
+        your data directory. Sorry.
+
+
+    +   You can now change the default extension from inside the ffe app menu.
+        This is the global setting. As before, you will need to hack the setting
+        into your presets if you need this set at the preset level.
+
+        There is also a HotKey for this: F2.
+
+        You can stop bugging me about this now!
+
+        It should be noted that there is rarely any need to set this directly.
+        ffe takes care of the extension mostly automatically. The default is
+        used only as a fall-back when, for some reason, ffe can't determine the
+        extension.
+
+        Note: You can set this on a preset level. There is an edit item in the
+        preset drop-down control's context menu.
+
+        But again, you should not need to. Or at least, very rarely!
+
+
+    +   Added a few more GUI menu items, so you can get to more of the many many
+        settings hidden away inside ffe.ini.
+
+
+    ~   When saving a preset, ffe now only saves the settings you actually
+        changed (mostly). The actual data saved is reported to your ffe console.
+
+
+    ~   batch_commands_timeout and batch_commands_timeout are no longer saved
+        automatically on a per-preset basis (they were simply copying the master
+        settings anyway, as there is no way to alter these from within the ffe
+        GUI). Users advanced enough to be using this stuff can add parameters
+        to their presets manually, if you so desire, along with any of the other
+        script control settings.
+
+
+    +   There is now an "About ffmpeg" option in the app menu and tray menu
+        (beside the About ffe entries) so you can see the current version of
+        whichever ffmpeg binary you are working with. The output is piped to
+        your ffe console.
+
+
+    ~   The default extension for the ffmpeg-generated help files is now "txt".
+        You can change this in the help button preferences.
+
+
+    ~   Removed the limit on the number of help button you can show in the GUI.
+        Also the magic used to place them. There is a trade-off between the
+        space taken up by these buttons and the space taken up by the custom
+        command buttons. You will find balance.
+
+        TIP: If you create enough custom buttons to fill a rectangular block
+        MINUS ONE, you leave the bottom-right corner empty and a large number of
+        help buttons will slide in comfortably.
+
+
+    +   Added an automatic extension mapping for "gif". ffmpeg can output
+        animated gifs, by the way. I really must put these mappings into some
+        kind of user preference.
+
+
+    +   Added quite a few app menu items so you can get to more of the hidden
+        ffe settings. I don't think there are many left.
+
+        I also moved a couple of prefs around to hopefully make things more
+        logical.
+
+
+    ~   The flag that tells ffe you already created a particular help file (with
+        FFmpeg) and to simply re-load that instead of re-creating, is now unset
+        when you load a fresh FFmpeg binary, in case the codecs and what-not
+        have changed.
+
+
+    +   You can now disable the "with file paths" checkbox altogether, so file
+        paths never get saved with or loaded from presets. A ToolTip will still
+        appear over the control's area, informing the user that this preference
+        has been disabled inside ffe.ini.
+
+        File paths will always be remembered between sessions however, if you
+        have "retain exit settings" enabled.
+
+        Also, if you launch ffe with go(<preset-name>) and there is an input
+        file specified, ffe will load that inputfile (which may have wildcards).
+
+
+    ~   ffe will now report to your console if you attempt to create a media
+        report from a missing input file. (this "feature" was later removed. If
+        you aren't getting any output from your edited help button, run your
+        command through the FFmpeg Quick Task button to get the full error
+        output)
+
+
+    ~   The delimiter used to separate commands from comments inside the custom
+        buttons has been changed from "|" to "***", as the pipe interfered with
+        certain FFmpeg advanced commands. Sorry.
+
+        You will need to update your buttons manually. Again, sorry. This is
+        easiest in a text editor, though shift-clicking any button will get you
+        to the gubbins. If you have lots of buttons, you definitely want to do
+        this in a capable text editor; it will only take a few seconds..
+
+          Select the entire [custom buttons] section, replace "|" with "***".
+
+        I have also made this available as a preference in your ini file. So you
+        can keep the old behaviour if you prefer, update at leisure, whatever...
+
+            button_delim=***
+
+
+    ~   The HotKey to abort the current task is now Ctrl+Q, which a) is more
+        in line with the "q" we send to ffmpeg itself to quit, and b) works,
+        which F4 seems not to any more. I may investigate. But then again, maybe
+        not; F4 is too easy to hit by mistake!
+
+        Pause/Break still aborts *everything*.
+
+
+    *+  Fixed the F9 Drop Window toggle not working in recent Windows builds and
+        improved it so it works no matter if you have the main GUI or drop
+        window at the front. So long as ffe is at the front, F9 toggles the Drop
+        Window.
+
+        We're using twin-accelerators now, so it goes *really* fast!
+
+
+    ~   On the subject of accelerators, I've re-coded most of the HotKeys to
+        use GUI accelerators now, so there is no chance of those HotKeys
+        interfering with other apps / being unavailable / etc..
+
+
+    +   The current state of the tri-state controls is now shown in their pop-up
+        ToolTips. Of course, you can see their state from the GUI, too:
+
+            Checked     = Enabled
+            Unchecked   = Disabled
+            Filled      = Unset
+
+
+    +   A simply mad amount of console and debug reporting. You want data? You
+        got data!
+
+        btw, "The data say" is good English. "Data" a plural. Unless we are
+        talking Star Trek; in which case "Data" is a sentient android seeking
+        humanity. The singular is "datum". But seriously, who says "Datum"?
+
+
+    ~   Removed legacy (pre v0.9) pref handling. It's just confusion in the
+        code and there's really no need for it any more.
+
+
+    ~+* Ctrl+A will now select all the text of the control you are in, as
+        opposed to only the console output. This only works in controls that
+        normally have more than a few characters in them, so not for codecs and
+        what-not (their text is automatically selected when they get focus), yes
+        for parameters and file inputs.
+
+        And the console, of course. Another pet annoyance bites the dust!
+
+
+    +   You can now add and remove help buttons from directly inside ffe. Right-
+        click any help button for options.
+
+
+    +   You can now also edit help buttons from directly inside the GUI.
+
+
+    ~   When you wipe a preset, ffe makes a backup, as ever. If you wipe a
+        preset with the same name again, ffe takes a backup of your previous
+        backup before creating the backup. That's two backups. No more.
+
+
+    +   You can now restore preset backups from directly within the ffe GUI.
+        Shift+Click or Right-Now-Click the wipe button to get to the backup
+        chooser.
+
+
+    +   Added a "Restart ffe" option to the tray menu. There is also a HotKey
+        for this: Alt+F5**. This is useful if you need to reload after changing
+        some global preference, and other stuff.
+
+        **  This, like so much else, will become a thing.
+
+
+    ~*  I re-organised and re-wrote some menus to (hopefully) make them more
+        logical. Someone won't agree.
+
+
+    +   Drop Window Image Starter Pack..
+
+        Added the facility to download a starter pack of images for your drop
+        window. A small, tasteful, video-orientated selection.
+
+        You can get to this feature from your ffe tray menu.
+
+        There is a preference for the images' base URL, so you can use your own.
+
+        image_pack_url=https://corz.org/windows/software/ffe/files/DropWindowImages/
+
+        If you decide to roll your own for whatever reason (I can think of a
+        few), upload a list of images, named..
+
+            image_pack_urls.txt
+
+        and drop it into the root images folder.
+
+        Subfolders are fine; ffe will re-create those locally and make them
+        available in your drop window's cascading images context menu. Pretty
+        neat. All this is nicked from my upcoming app; BlobDrop.
+
+        ffe will use this as a download manifest. The format of the file is a
+        simple plain text list of image paths from the root, e.g.
+
+            Film-Reel-Simple.png
+            Folder-Videos-icon-By-Zerode_small.png
+            Animated Gifs/Animated_film-strip-trans-by_Cor.gif
+
+
+    ~   Updated the short test button to use "-frames:v" instead of "-vframes",
+        which has been deprecated (it still works for now, but will be removed
+        in the future).
+
+
+    +   You can use quit(preset) in place of run(preset) on the command-line, as
+        it perhaps makes more sense. As usual, it runs the preset and quits.
+
+
+    +   Updated some of the detault custom button presets to be more in line
+        with modern FFmpeg usage.
+
+
+    +   Added the current help command to the help buttons ToolTip, so you can
+        see what the *actual* command is without editing the button.
+
+        Lots of the ToolTips have useful dynamic information, by the way.
+
+
+    +   Added ini option to remove comments from your ini file, which is:
+
+            clean_comments=true
+
+        This will also happen automatically if your ini file grows to more than
+        60KB in size, to prevent clipping if it were to reach 64KB in size; the
+        theoretical maximum size for an ini file. For some reason.
+
+        Contrarywise, if you want the original comments back and you ini file is
+        small enough to take them..
+
+            Inside ffe.ini
+
+              Set:
+                clean_comments=false
+
+              Set your version number *anything* smaller.
+
+            Restart ffe.
+
+
+    +   Post-File run options..
+
+        There is now a few choices for how to run the post-file command, that is
+        the optional command ffe runs after each completed file, usually, though
+        not necessarily, "doing something" to the output file.
+
+        Firstly, you can choose the method used to run the command..
+
+            "Standard": Internal, direct, accepts arguments and > redirections.
+
+            "dos": As above, but through Windows command interpreter (cmd.exe)).
+
+            "ShellExecute": A simple mechanism enabling you to launch a file
+                            using Explorer's default verb, usually "open".
+
+        Generally you want the internal (direct) method, but if your console
+        program isn't working as expected, try the dos option.
+
+        Note: When using the dos method, you will need to put "quotes" around
+        any path with spaces in it, including the path of the program.
+
+        NOTE: Any quotes in post-file commands are encoded as '&quot;' in your
+        ini file. It all happens automatically from the GUI, but remember this
+        if you are editing you ini manually.
+
+        When running direct/dos you also have the following options:
+
+          Post-File Command Capture     (true/false)
+
+            Choose whether or not to capture the output (which will be visible
+            in your ffe console). If you are capturing the output, you will
+            obviously need to wait for the process to end. If your cammand is
+            expected to take a long time, you may want to disable this.
+
+                post_file_capture=true
+
+
+          Show Post-File Command Window     (true/false)
+
+            This sets whether or not we run the command hidden.
+            By default we show the program window..
+
+                post_file_show=true
+
+
+        NOTE: Pre-Job, Post-Job and Post-File commands can all be saved inside
+        presets, even the default preset. However, if you have any of these set
+        and then load a preset with them unset, they will remain unchanged. This
+        is by design..
+
+        You can load a preset with some commands setup, then another preset
+        without any commands, then (perhaps after some tweaks) re-save the
+        second preset, except now it has commands ini it.
+
+
+    +   The preference kill_ffmpeg_on_exit=<true/false> will now be honoured
+        when read from a preset. Though this is technically a global setting, it
+        has potential usage inside presets, so can be manually added, if
+        required.
+
+
+    ~   The "reset" button now resets ALL parameters and settings, including
+        any pre- and post-job batch files and post-file commands. This is more
+        in line with what most users expect to happen and is less confusing.
+
+
+    ~   Although the state of the tri-state job buttons (overwrite, join, quit-
+        when-done, shutdown-when-done) aren't normally saved to a preset unless
+        they have been changed by the user (otherwise inheriting the defaults),
+        they WILL now be retained between sessions, as to have half of them (the
+        pre- and post- commands) remember and the others not, is odd if you
+        don't understand the reasoning behind it, which was flimsy to begin
+        with.
+
+        NOTE: pre- and post-job command file locations, as well as post-file
+        commands are grabbed fresh from your ini file before they are used, so
+        you can edit these in the ffe GUI or your favourite text editor and the
+        new batch scripts/commands will be picked up and used immediately.
+
+
+    +   You can now set a default audio file extension. This is rarely, if ever
+        needed as most audio codecs map simply to file extensions.
+
+        At any rate, it's now a pref: default_audio_extension=aac
+
+
+    ~   Updated sample custom button Frei0r filters to use new syntax. I also
+        tracked down a collection of x64 Windows DLL's (inside the excellent
+        Shotcut) and put them in the goodies folder (see the ffe page) for you.
+
+        Only some of these work. At least, my limited tests have only gotten
+        some of them to work, albeit some of the funner ones. There is a list of
+        the ones I got working, here:
+
+            https://corz.org/windows/software/ffe/files/plugins/
+
+
+    +   In the event of conversion failure (perhaps a plugin parameter?) ffe
+        will now clean up the empty files FFmpeg leaves behind.
+
+
+    +~  Fixed-up the logic of the pre- and post- job buttons. ffe will now also
+        check for the existence of commands/batch files when you enable these
+        features and move straight to the creation dialogs should any be absent.
+        ffe will also inform you when pre-job and post-job command files load
+        successfully, or not. Same with the post-file command.
+
+        If these features are disabled/unset, ffe won't bother you about them.
+
+
+    +   ffe will now report the total time for a batch at the end of the batch.
+        Quite an omission.
+
+
+    +   Improved the tracking of external commands, so you can see errors and
+        such in the console.
+
+
+                                         *** Fixes ***
+
+    *   Fixed a bug where ffe would annoyingly load the output file path (with
+        MATOF, if enabled) even though you loaded a file on the command-line
+        (SendTo, etc.). Now ffe will re-create the output path, as usual, from
+        the input file. If you *really* want to get back the stored exit
+        settings' output file path, click the MATOF button.
+
+    *   Fixed a bug where if you set a delayed start and there was an error
+        creating the batch, the state (and the error message) would loop
+        indefinitely, eating CPU. Thank the Teen Titans for spotting this one!
+
+    *   Fixed the version checking at the server end. Oops!
+
+    *   Fixed a bug where ffe wouldn't pass your Y/N response back to ffmpeg,
+        as the ffmpeg developers had (finally) fixed that typo and ffe no longer
+        recognised the question!
+
+    *   Cleaned up batch exiting so that total time and such are displayed in
+        the console, just like regular jobs.
+
+    *   Fixed a lot of minor bugs as I went along. Things I noticed I'd not
+        finished or not thought-out properly. Run a diff on the source if you
+        want to see the many many changes. Some of these were recently
+        introduced! Suffice to say, loads of wee niggles and annoyances have
+        been taken care of..
+
+    *   Fixed the flashing buttons. Oops.
+
+    *   Fixed new dialogs appearing top-left instead of centre.
+
+    *   Fixed MATOF's often wonky target file handling (dragging a folder onto
+        the output is still the best way to set the output).
+
+    *   Cleaned up the double+ ToolTips.
+
+    *   Fixed the resizing errors.
+
+    *   Fixed codecs not present in the combo list not loading from presets.
+
+    *   Fixed certain settings not being remembered properly (e.g. the
+        store_filepaths state checkbox wasn't being saved).
+
+    *   Fixed the incorrect menu items.
+
+    *   Stopped empty log files being created. This may still happen
+        occasionally in the beta, when I forget to remove temporary lines with
+        debug_level=0, but it won't happen spuriously on every run.
+
+    *   Fixed the presets menu not refreshing after renaming a preset.
+
+    *   Fixed renaming sections from re-ordering the presets combo (the AutoIt
+        built-in IniRenameSection() function does this, so I re-wrote it; with a
+        sledgehammer).
+
+    *   Fixed a bug where renaming custom buttons would place the renamed button
+        at the end of the buttons. This annoyed people. Again, unthinking use of
+        built-in functions was the cause.
+
+        We use a much more elegant solution now and while I was in there I
+        cleaned up some other old scrappy code.
+
+    *   Fixed the button grid re-creating two, or was it three times when the
+        GUI was resized beyond its minimum limits and ffe had to resize the GUI
+        automatically. Now it will refresh a single time, as expected.
+
+    *   Fixed the "gone too far" flag (when the above happens) not being unset
+        after an automatic correction, so the button grid was being recreated
+        every time the window dimensions changed, or were checked, which is a
+        lot.
+
+    *   Fixed a couple of spurious variables that found their way tagged onto the
+        end of console lines.
+
+    *   ffe will no longer crash if forced to use an empty ini file; it will
+        simply replace it with the default version.
+
+
+    *   Fixed a bug where load(), run(), etc. would not work if
+        retain_exit_settings was enabled.
+
+    *   Fixed a bug where exit settings were being destroyed on quit if you
+        launched ffe with load() on the command-line.
+
+    *   Fixed a bug where the mian GUI would appear briefly during a "generate"
+        option.
+
+    *   Fixed a few bugs with the pre-job, post-file and post-job commands
+        buttons, tootlips and loading. Everything should now work as expected.
+
+
+    *   Fixed a bug where your log location would get set to the system
+        temporary folder unless it was set inside your current preset.
+
+    *   Fixed a bug where running a non-existant preset from the command-line
+        would result in the batch running with the default settings. Now, if a
+        preset does not exist, ffe will fail with an error.
+
+
+    *   Fixed concatenation not working. We now instruct FFmpeg to accept
+        "unsafe" paths. We are also properly tracking the output so we can know
+        these things.
+
+    *   Post-batch tasks will no longer run if the batch was aborted. Oops!
+
+    *   Fixed the text selection issues on the command-line display. You can do
+        Ctrl+A in there, too, to select all text.
+
+    *   Fixed the q/n keys not passing to FFmpeg during a concatenation
+        operation.
+
+    *   Fixed a bug where slashes were being "fixed" in shell commands when the
+        user put @tokens in their batch files, mangling the flags as a result.
+
+
+                                            ~ DEV ~
+
+    +D  Much improved error messages and debugging. You can set the debug level
+        from 0 (off) to 10 (gobs), in your ini..
+
+            debug_level=10
+
+        This is useful for messing with the code or creating a bug report.
+
+        Level 1 (the default) will reports only errors.
+
+        We can also technically set debug_level=0, which will usually produce no
+        output. This can be useful when we need to debug one particular section;
+        we can add debug lines with the level set to 0 and we will see output
+        for ONLY the section we are working on, which can save copious
+        scrolling. The default level will display these messages too, of course.
+
+
+    ~D  We now use CorzFancyInputBox() exclusively for dialog inputs, so no need
+        to include InputBox() resources. CorzFancyInputBox() has a few
+        advantages, not least of which, it remembers the positions of your
+        various dialogs. If you like your rename preset dialog to pop up
+        precisely under the control, just put it there one time. Done.
+
+        All input dialogs now use the Consolas font for the input. This can
+        also now be set in your ini file. If the font name has spaces,
+        enclose it "in quotes".
+
+
+    +   You can now set the maximum debug log size. When this limit is
+        reached, the file is archived and a new log is created.
+
+
+    +~  LOTS of internal code clean-ups, minor fixes and improved efficiency.
+
+
+    ~   I moved a lot of the functions around to hopefully make things more
+        logical. Forget running a diff.
+
+        I also added dummy functions for easy navigation in any decent text
+        editor. These have been growing for a while and are really useful for
+        making and navigating to sections in your code.
+
+
+    +   Added a wee comment tag ("::dev::") above any items in the source code
+        that I consider useful to you getting ffe compiled ASAP; places you will
+        need to make edits/comment-out/etc..
+
+
+
+
+  2.0   ("hatched socket")
+
+
+    +   Batch Runs.
+
+        ffe can now process multiple files. All you do is replace the file name
+        with an asterisk/question mark. Your input could look something like..
+
+            I:\Rip\ffe\Test\*.avi
+
+        Which would have ffe process every AVI file in the specified directory,
+        applying whatever options you have set in your various settings.
+
+        You can also do:
+
+            I:\Rip\ffe\Test\*.*
+
+        which would process ALL the files in the directory.
+
+        In other words, you can use regular Windows file name wildcards. These
+        are all fine..
+
+            I:\Rip\TV\Test\*.*
+            I:\Rip\TV\Test\*.mkv
+            I:\Rip\TV\Test\Suits*.*
+            I:\Rip\TV\Test\Suits.S01E??.*
+
+        The output input will display the */? to let you know a batch operation
+        will occur. The actual output name will be created dynamically during
+        the batch run and appears in that same space (which is greyed out during
+        the run), displaying whatever file ffmpeg is currently outputting.
+
+        Your console output and log file (if created) will contain output for
+        the entire batch operation, and will be saved at the end of the batch
+        run, to wherever you specify.
+
+        And you can of course save batch jobs as presets. If you regularly find
+        yourself, for example, grabbing the first fifty frames from a bunch of
+        movies, you can setup an ffe batch job to process them all and then, in
+        the future, simply drop the movies in your specified folder and launch
+        ffe with the preset on the command-line. Or create a generic preset and
+        drag in the folder... ffe is designed to accommodate many styles of
+        working, at least, all the fast ones!
+
+        You could make a single-click ffe shortcut on your desktop to handle the
+        entire job.
+
+        NOTE: You cannot create batch jobs with URLs as the input. However,
+        there's nothing to stop you using URL for the output, perhaps an FTP
+        directory.
+
+
+    +   Concatenation (joining).
+
+        At the end of your batch operation, you can have ffe fire-up ffmpeg's
+        built-in concatenation routines to join all the output files together.
+        The concatenated output name can be set in your ini (default: "joined").
+
+        To enable this, check the "join" checkbox before you run the job.
+
+        NOTE: although ffmpeg/ffe will allow you to join *any* files together,
+        it is obviously only going to work correctly if you join files with the
+        same output format, dimensions and such. HOWEVER, if you are looking for
+        some zany, original video effects, or to create an audio track, go right
+        ahead!
+
+        NOTE: If you have overwrite enabled, this also applies to any
+        concatenated output; you won't have to respond to ffmpeg's command line
+        prompts, unless you want to.
+
+        The concatenation task details also appear in your job log.
+
+
+    +   Improved the log output and final time readings. Instead of always
+        getting rounded seconds, you will now get a more human readable output,
+        with hours and minutes. Accuracy is also improved for short timings
+        (under a minute) where the readout will /not/ be rounded.
+
+        The original (rounded seconds) output will appear in braces next to the
+        regular output, in case you like seeing that, e.g..
+
+            Completed in 3.19755239240638 seconds   (3.2 seconds)
+
+
+    +   Added "Abort Batch" to tray menu. If you use "Ctrl+Q" to quit the ffmpeg
+        task during a batch run, ffe will skip right to the next file. If you
+        want to abort the /entire/ batch, use the tray menu item. There is also
+        a HotKey for this, which is: Pause/Break.
+
+        NOTE: Pause/Break will also abort any single task, so makes sense to use
+        for all aborts.
+
+
+    +   Customizable Control Buttons.
+
+        These are nifty. You can specify /any/ number of custom buttons to add
+        whatever parameters you want to the extra/input parameters input. Okay,
+        it's actually 500, but seriously, no way you are fitting 500 buttons in
+        there.
+
+        Custom buttons are simply a place to store your argument "sinppets".
+        Things which are often used and could be applied to many presets (which
+        can be thought of as "scenarios").
+
+        For example, you might have a button called "Add Subs", which would add:
+
+             -scodec copy -metadata:s:s:0 language=eng
+
+        into the extra arguments. Or another button (keeping with the subs
+        theme) named "Subs Probe", which adds something like:
+
+              -probesize <bytes> -analyzeduration <microseconds>
+
+        Or whatever you like. This is especially useful for filters and other
+        things you use over and over, as well as a place to put "templates",
+        base settings that you can tweak on a per-job basis, perhaps saving the
+        actual button value as <what-unit-it-is>, in case you forget.
+
+        You can control how many columns of buttons there are, or set it to auto
+        and let ffe work it out (the number of rows is always worked out
+        automatically).
+
+        There is no theoretical limit to the number of columns you can create,
+        though you will need a wide monitor and a large window to display
+        double-digits of columns!
+
+        For example, if you have 10 buttons but only specify 3 columns, you will
+        only see (with default button dimension settings) NINE buttons, as there
+        is a limit to the number of rows which can be displayed inside the
+        interface - ffe will stop creating custom buttons when it has filled all
+        the rows. So ensure you create enough columns to house all your custom
+        buttons, or set it to "auto" and ensure your window is wide enough.
+
+        You can also control the width of the actual buttons and the font size
+        used (as well as spacing, Y-position and button height). You can have
+        HEAPS of small buttons or a few, well labelled big buttons. Your call.
+        Hovering your mouse over any custom button pops up help text with the
+        contents of the button.
+
+        Buttons are created left-to-right, row-by-row. A few example buttons are
+        provided. Old ffe.ini files without custom buttons will get the samples
+        automatically installed with this and later versions of ffe.
+
+        Click the button and its parameters will appear in your extra arguments
+        input. Simple. Click the button a second time to remove that same
+        command. Like I said, nifty.
+
+        You can set the number of columns directly from the App Menu (up to 24
+        columns, if you need more, set it in ffe.ini, or use the Auto setting),
+        and have the buttons re-created live inside the GUI, with any new
+        buttons you just created appearing instantly.
+
+        If you don't want to change the number of columns, only refresh (perhaps
+        to show manually ini-added buttons - though why - the GUI inputs are
+        great!), simply re-select the current number of columns!
+
+        As mentioned, there is also an "auto" setting, which will automatically
+        select the number of columns based on the width of the window and number
+        of buttons. This works great and is what I use myself. In auto mode,
+        resizing the main window recalculates the buttons.
+
+        If you Shift+Click any of the buttons, you can edit the button directly
+        from within ffe. NOTE: If you /change/ the name of the button, you will
+        create a new button.
+
+        Or rather, if you want to create a new button, simply enter a new name
+        in the button editor name input. The idea of this is that it is QUICK to
+        create a new button:
+
+            Shift+Click ANY button
+            Type Name <enter>
+            Type/Paste Function <enter>
+
+            Voila! A New Custom Button.
+
+            And the code goes directly into the extra arguments input, so you
+            don't even have to click the button you just made.
+
+        Each button also has a context (right-click) menu where you can choose
+        to rename or delete your button if required. There is no warning with
+        the delete option, okay, there's one, the very first time you use the
+        facility. THEN there is no warning. You have been warned!
+
+        You can use "&" symbols in the names part to specify accelerators for
+        these buttons, i.e. "Blur &1", which would enable you to activate that
+        button by doing "Alt+1" on your keyboard. Or "&Blur", which would enable
+        you to activate it with Alt+B.
+
+        ** BY THE WAY, if you don't *see* the accelerators when you launch ffe,
+        hit the ALT key one time.
+
+        As a bonus, if you hold down the Ctrl key while you click the button,
+        the action will apply not to the extra parameters input, but to the
+        INPUT parameters override, so you can use your custom buttons to keep
+        snippets for either or both inputs. Ctrl+Click the button a second time
+        to remove the arguments from the override input.
+
+        See the [custom buttons] section of ffe.ini for the actual button data.
+
+        You generally don't need to concern yourself with this as all the
+        create/edit/rename/delete functionality can be got at from the GUI,
+        however, for those that like this sort of info, here it is..
+
+        A [custom buttons] section looks something like this..
+
+            [custom buttons]
+            &Sharpen A=-vf "unsharp=5:5:1.0:5:5:0.0"
+            Sha&rpen B=-vf "unsharp=luma_msize_x=7:luma_msize_y=7:luma_amount=2.5"
+            &Blur=-vf "unsharp=7:7:-2:7:7:-2"
+            BoxBlur &1=-vf boxblur=2:1
+            BoxBlur &2=-vf boxblur=2:1:cr=0:ar=0
+            &PNG 1/s=-r 1 "output%05d.png"
+            HQ &JPG 1/s=-r 1 -qscale:v 2 "output%05d.jpg"
+            &Glow=-vf "frei0r=glow:20"
+            Pi&xelate= -vf "frei0r=pixeliz0r:0.02:0.02"
+
+        On the left, the name of the button (including &Accelerators). This will
+        be the text on the button itself. It is also used for the pop-up tooltip
+        (along with the command). On the right goes the command to add to the
+        extra parameters.
+
+        Don't worry about colons and quotes and stuff leaking into your file
+        names via the MATOF string; ffe is smart enough to handle this. Usually
+        you don't need the quotes, anyway, but they can improve readability.
+
+        You can include notes along with the button. These notes will be
+        displayed in the mouseover ToolTip. This is a handy place to put
+        explanations for obscure parameters. These are stored inside the custom
+        buttons section of ffe.ini, simply added onto the end of the command
+        after a pipe "|" character, like so..
+
+        [custom buttons]
+        add SRT subs=-scodec copy -metadata:s:s:0 language=eng|merge subs in original SRT text format and set the language to English.
+
+        NOTE: when editing custom buttons, the final (3 of 3) dialog is the
+        comment input. If you immediately dismiss this dialog (Esc key) any
+        current value will remain unchanged. It's quicker if you just want to
+        edit the actual command - the most likely scenario. If you want to
+        delete the comment, delete it in the input and click <OK>, as usual.
+
+
+    ~   Because of the custom buttons and their accelerators, I have moved all
+        Alt+HotKeys to Ctrl+HotKeys, leaving you free to use ALL available
+        accelerators for your custom buttons. Yum.
+
+
+    +   Console output messages. ffe will now drop useful messages into the
+        console output, for example, confirmation when you wipe or add a preset,
+        save or update a custom button, change AppMenu items and so on.
+
+        Also, when you load a preset, ffe will use this facility to inform you
+        if the status of any hidden settings have changed, e.g..
+
+            loading preset: Apple Movies
+            default_extension: "mp4"
+
+        Because of this and other console output enhancements and integrations,
+        console output has become integral to ffe's operations and you can no
+        longer disable it.
+
+        If you really need to not see it, ffe will allow you to resize the main
+        window small enough to hide it!
+
+
+    +   Automatic backup of wiped presets. You can still use the old method
+        (creating a second preset with some string added to the end, which will
+        be ignored during presets load) but ffe will now create an automatic
+        backup of any wiped preset, just in case.
+
+        Obviously, these backup presets do not appear in the presets drop-down.
+
+        There is also a new context menu on the presets drop-down, with an
+        option to delete all backup (wiped) presets.
+
+
+    +   A quick way to update the location of your ffmpeg binary: drag it into
+        ffe's file input.
+
+
+    +   NEVER OVERWRITE fail-safe. This just happens, there is no setting.
+        Basically, ffe will never instruct ffmpeg to overwrite a file which has
+        been created in the current job. This is to prevent people shooting
+        themselves in the foot, waking up the next morning to find their
+        expected dozen 1080p TV episodes have been transformed into unplayable
+        subtitles files, which could potentially happen if you used the *.*
+        wildcard on a directory which contained auxiliary files, e.g..
+
+            my-movie.mkv
+            my-movie.srt
+
+        And didn't double-check your parameters! When encountering this
+        (admittedly, your) instruction, ffe will give the to-be-created file a
+        random suffix. Remember, when using wildcards in general, it's usually
+        wise to specify as *much* as possible of the file name.
+
+
+    +   Added a "short test" button, which simply adds parameters to the extra
+        params input, specifying we process only the first 1000 frames, a thing
+        I do a lot. You can, of course, then edit this setting inside the extra
+        parameters input, as usual.
+
+        You can also specify the number of frames the button adds; Shift+Click
+        the button to edit this number before insertion. Right-click the button
+        for an edit-only option. And of course you can edit ffe.ini directly.
+
+    +   There are now configurable help buttons that open (by default) the
+        basic, formats, filters and codecs help files, as well as the FULL
+        ffmpeg help text, respectively, within the console output. As usual,
+        Shift+Click opens the help text in your default .nfo viewer.
+
+        These are super-handy when when you want to quickly check an ffmpeg
+        parameter, of which there are a ridiculous amount, which btw, I love.
+
+        These texts are also dumped to your data directory (second and
+        subsequent viewings in the same session will load these dumped files
+        rather than create afresh with ffmpeg.exe). They are always created
+        fresh at least once per session, in case you updated your ffmpeg binary.
+
+        You can edit these buttons; the text they show and what they do; inside
+        ffe.ini. The format is fairly straightforward..
+
+        help_texts="Main|help.nfo|-h,Formats|help-formats.nfo|-formats,Filters|help-filters.nfo|-filters,Codecs|help-codecs.nfo|-codecs,Full|help-full.nfo|-h full"
+
+        Each help file section is separated by a comma "," and each property is
+        separated by a pipe "|" character, basically..
+
+            Title|output-filename.ext|ffmpeg command
+
+        The first entry will be CAPITALISED and used in the ToolTip entry, which
+        makes for faster recognition, should you forget which button is which
+        and need to hover over them to get help.
+
+        With this in mind, I also added a wee help text which pops up the name
+        of the button in Big Letters in the space above the buttons. The text
+        there will appear Proper Case, regardless of how you enter it in your
+        preference. Yes, I am evil!
+
+        And as I mentioned, you can have up to five buttons. Or none at all.
+        Your call.
+
+        NOTE: when using the help launch option (Shift+Click), ffe will use your
+        system's default viewer/editor for that type, so use whatever file
+        extension launches your preferred viewer.
+
+
+    +   Delayed Job Start. In the System Tray menu, is an option to start your
+        job at a later time. A simple dialog will let you choose how many days,
+        hours and minutes you wish to delay the job for, or alternatively, pick
+        an exact date+time from the picker.
+
+        At any rate, ffe will then go into suspend mode until your chosen time
+        arrives.
+
+        You will note the delayed start system tray menu item is now checked. If
+        you wish to abort the delayed start, uncheck that. This also works if
+        you were daft enough to start the delayed start with no input & output
+        files specified!
+
+        Once delayed start is activated, ffe posts a handy, human-readable
+        countdown timer in its main window TitleBar, lets you know exactly how
+        long there is to go. For those that don't know chops from cheese, you
+        can disable this inside ffe.ini.
+
+        There is a HotKey for this: Ctrl_D.
+
+        IMPORTANT: In suspend mode, ffe will still accept changes to the job's
+        parameters.
+
+
+    +   Floating Drop Window
+
+        You can open a floating, transparent drop target which acts just like
+        ffe's regular input file input, so you can drag in files and folders and
+        have ffe process them immediately with your current drag-and-drop
+        command, or just insert them into your file input. You can also use it
+        to set the location of your ffmpeg binary, which some folk need to do a
+        lot.
+
+        The drop window floats above all other windows on your desktop, so it's
+        always available to accept files and folders. During ffmpeg jobs, the
+        drop window will hide itself.
+
+        The floating window is created from an image. A few samples are
+        provided. Many more here..
+
+            http://corz.org/windows/software/ffe/files/
+
+        You could use a regular rectangular image, but the facility is
+        designed to be used with a partly transparent image, so you can have
+        some useful shape floating on your desktop, something that fits well
+        into a corner, or along an edge, or resembles Jessica Alba, or whatever.
+
+        Click and drag anywhere inside the drop window to move it around.
+
+        You cannot usefully resize this window, if you need a different size,
+        use a different sized image! There is nothing to stop you using an image
+        the size of your entire desktop or bigger (ffe will use a bit more
+        memory, that's all), maybe create a live border around one the edge of
+        one of your monitors. A few "strips" are provided for edge use.
+
+        For PNG and ICO files, ffe produces a proper transparent window with
+        full alpha blending - drop shadows will look lovely. This enables you to
+        produce some beautiful and useful "shades". GIF, WMF and EMF do not
+        supports partial transparencies, but you can still have useful shapes.
+
+        NOTE: The floating window will change transparency (to 50%) when you
+        hover your mouse /anywhere/ over the image rectangle, but only the
+        visible parts of the window are *active*. In other words, if you drag a
+        file onto an empty part, it will fall right through!
+
+        This is by design (so you can click-through the window). If you need a
+        window that can accept a drag-and-drop across the entire rectangular
+        area, set the outlying transparency to 1%, rather than 0. It will still
+        be invisible to the naked eye, but will prevent click- and drag-through.
+        You can also apply this 1% to inner areas, whilst leaving the outside
+        shape "shaped", i.e. completely transparent, for click-through.
+
+        An example of this principle is included in the distribution, named:
+
+            drop-movie-to-ffe-SOLID-CENTRE.png
+
+        In this example, the outside (curved) edges of the floating window are
+        completely transparent, if you click outside the shape (yet still within
+        the "rectangle"), the click will pass straight through. If you click in
+        the "transparent" middle section, although it "looks" transparent, it
+        behaves just like the visible parts of the window; click and drag to
+        move, accepts file, and so on.
+
+        You can also set the overall transparency of the visible parts of the
+        floating window (the transparent areas of a transparent image will
+        always be 100% transparent - unless using the above-mentioned trick).
+        You can set it from 0 (opaque) to 100 (completely transparent). As
+        mentioned, it will jump to 50% visiblility when you hover your mouse,
+        over it, for feedback (unless you already have the transparency set to
+        within 10% of 50%, in which case it will jump to 0% transparency).
+
+        ffe uses Windows GDI+ to handle images, so technically, anything GDI+
+        can load, ffe can use.
+
+        Yes, you can use animated GIF files**. And yes, they will animate. Note:
+        dragging a file onto a wildly dancing elf could be tricky, though not
+        impossible! Gently throbbing buckets and such-like work well, though.
+
+        Image formats that I know work:
+
+            PNG, GIF, ICO, JPEG, BMP, EMF, WMF, PCX (most), EPS (some) and TIFF
+
+        Transparency supported:
+
+            PNG, GIF, ICO, EMF and WMF
+
+        Alpha Blending (proper shadows and semi-transparencies) supported:
+
+            PNG and ICO
+
+        Animation supported:
+
+            GIF
+
+        Right-Click the Drop Window for a fantastic context menu. There are
+        options to refresh the menu and close the floating window, as well as
+        pick a new images folder, open the current image's folder and exit ffe.
+        But that is not all..
+
+        Any /other/ allowed images you have sitting in the same folder as your
+        drop window image will appear in an "Images" menu. And any images you
+        have in folders inside /that/ folder will appear as submenus, and so on,
+        all the way through the entire directory tree. Aye. Select any image to
+        switch to that image, obviously.
+
+        Drag one of your allowed image types into the drop window and it becomes
+        the new drop window. Allowed types are set in ffe.ini - by default, png,
+        gif, emf, wmf and ico files, because they can all have transparencies.
+
+        The images (context) menu has two modes of operation, fixed and fluid.
+
+        In fixed mode, you set a "root" Images directory and the context menu
+        always displays that directory tree. You can also, optionally, have ffe
+        copy all dragged images into your Images folder.
+
+        In fluid mode, the Images menu instantly switches to the parent folder
+        of whatever image you select or drop in.  When I say "instantly", I mean
+        as soon as ffe has finished scanning the entire directory tree for
+        allowed images, which could take a moment, especially if you choose HUGE
+        media directories.
+
+        When the drop window is active you can also use the left/right arrow
+        keys to cycle through the current images menu, yes the WHOLE menu, right
+        through all the subdirectories, in order. ffe should be good for up to
+        five million items, though whether your system can handle a menu this
+        big is another story.
+
+        Remember, the HotKeys cycle through the *menu*, so if you have fluid
+        mode disbled, drag in an image and hit left/right, you will get an image
+        from the main drop window images folder. If Auto-Copy is enabled, your
+        new image is also immediately available from the menu/keys.
+
+        ffe is happy to use an image from *anywhere* on your system, regardless
+        of which mode you are in, fluid or fixed, and regardless of whether or
+        not the image is in your specied Images directory.
+
+        If you key past the end/start, ffe cycles back to the start/end.
+
+        It's okay to load LARGE animated GIF files. I haven't found one ffe
+        couldn't handle (the largest one I have is just under 6MB). As they say,
+        YMMV.
+
+        You can switch the Drop Window on/off from the main GUI (the wee target
+        button next to the file input) or the tray menu or by the HotKey (F9).
+        You can also (from the tray and drop window context menus) toggle
+        fixed/fluid mode as well as auto-copy images and choose a new location
+        for your (fixed) image folder, pretty much everything you should need.
+
+        NOTE: when fluid menu is enabled, the "Copy Dragged Images" and "Choose
+        Image Folder" items are greyed out. While technically possible to allow
+        users to alter these settings whilst in fluid menu mode, it would only
+        lead to confusion. When fixed mode is enabled (or rather, fluid mode
+        disabled), these items will again be active, which leads to the opposite
+        of confusion.
+
+        I discovered that the Drop Window also doubles up as a handy animated
+        gif viewer, not only with left/right arrow control through an entire
+        TREE of images, but showing the images directly on your desktop overlay,
+        which everyone who sees it will agree is pretty darned cool.
+
+
+        This drop window facility took way more code+time than I expected, so
+        please use it HEAVILY!
+
+
+        I should add, when I (and many thousands of others) want to get windows
+        EXACITALY at the edge, or over the edge, or just want a super-easy way
+        to do window moving and resizing in general, I use KDE-Mover-Sizer..
+
+            http://corz.org/windows/software/accessories/KDE-resizing-moving-for-Windows.php
+
+            (Drag window over corner of desktop, Alt+RightClick. Done.)
+
+
+        ** Animated GIF support is courtesy of trancexx. Cheers! If you are
+        compiling your own ffe, you will find this support is trivial to
+        remove/add, should you feel the need.
+
+
+    +   Recent files menu, in the system tray. Any files you create are added to
+        this menu. Select a file to open it with your system's default viewer
+        (whichever app is set for the "Open" verb).
+
+        Files are only added once, from the bottom-up - the most recently
+        created files go at the top.
+
+        By default, this information is /not/ stored between sessions, but you
+        can enable that, if you wish, inside ffe.ini.
+
+
+    +   Improved "singleton" behaviour. If ffe is already running and you send /
+        drop a file to ffe.exe, it will now, rather than simply quit; instead
+        bring the currently running instance to the front, inserting the new
+        file path into the file path input.
+
+        For those testing multiple ffmpeg binaries with multiple ffe setups, or
+        whatever, you can disable this behaviour from inside ffe.ini and run
+        multiple instances easily, perhaps with different settings, though
+        multiple instances of the same installation also work fine.
+
+
+    +   Shutdown when done. It can be handy to have ffe shutdown your computer
+        at the end of a long job. Set this to true to do exactly that.
+
+        This setting is also available directly in the GUI.
+
+    +   Quit when done. Works exactly the same way as Shutdown when done.
+
+        Both Shutdown when done and Quit when done also can be saved your inside
+        presets for convenient scheduled operation.
+
+        NOTE: If shutdown when done is enabled, the quit when done setting is
+        not available. Before shutting down your computer, ffe will quit.
+
+
+    +   Click the label next to the output path input to COMPLETELY disable the
+        output. This is handy if you are cooking up your own custom output, for
+        example when creating image sequences. This state is saved/restored
+        inside presets.
+
+
+    +   Intelligent Output Path.
+
+        Okay, semi-intelligent. ffe will attempt to create valid paths in your
+        output input (how confusing!), which is the input area where you enter
+        (or better yet, ffe enters) the name of the output file.
+
+        You can drag files and folders in there and ffe will work it out. For
+        example, if you have an input file, "D:\path\to\movie.avi", the output
+        input might read "D:\my\rips\movie.mkv". If you then drag the folder,
+        "D:\some\other\folder" onto the output input, it will now read,
+        "D:\some\other\folder\movie.mkv", automatically inserting the folder
+        part before the file name part to create a valid output file path.
+
+        If you now toggle the MATOF switch, the MATOF string will be added to
+        and removed from this new path, e.g..
+
+          "D:\some\other\folder\movie[libx265][AAC][-strict experimental -preset medium -x265-params crf=22].mkv"
+
+        Tip: If it's being too clever for its own good, delete the output and/or
+        hit the MATOF button a couple of times! ;o)
+
+        NOTE: As soon as you click your mouse in this input, you disable MATOF.
+
+
+    ++  You can now set the CPU priority of the ffmpeg task. There is a also
+        sub-menu in the app menu for setting this. Note: you can adjust this
+        live, whilst ffmpeg is running.
+
+        In practice, CPU Priority doesn't make a huge difference, at least on my
+        system, though could be handy for taxing jobs on computers with minimal
+        resources, or for squeezing every last drop of speed out of ffmpeg for
+        jobs you want done NOW.
+
+        It is also handy for throttling back if ffmpeg is causing your music
+        player to stutter.
+
+
+    ~   Selected text in the console output window will now retain its selection
+        when the output is not in focus. As well as being generally useful, it
+        means you can actually see matches when using the search function!
+
+        By the way, I didn't write the search function, it's one of those AutoIt
+        UDFs, so apologies for any niggles you may have with it. Feel free to
+        write a better one! I did improve its behaviour slightly (editing UDFs!
+        AARRGH!!) so that you can Find >> Type >> Enter to get straight to a
+        result.
+
+
+    +   ffe can now dump the log output next to the output file after every job.
+        The preference (in ffe.ini) is:
+
+            log_each_job=true/false
+
+        Note: The per-job log will follow your global log_append setting. You
+        can set this from the App Menu.
+
+
+    +   frei0r plugin support. OK, technically, ffe doesn't need to support
+        ffmpeg plugins as it is only a front-end, HOWEVER, anyone who has tried
+        to play with the the excellent frei0r plugins on Windows will realise
+        that this isn't always straightforward. Inserting system environmental
+        variables at run-time is outside the skill-set of the average user, for
+        a start.
+
+        ffe lets you choose a plugin folder, a place to dump your frei0r and
+        other ffmpeg dlls, and injects this path into the system environment
+        variables each time you run ffmpeg, ensuring point-and-click simplicity
+        when running frei0r processing plugins.
+
+        A couple of frei0r examples are included in the custom buttons. Enjoy!
+
+
+    +   You can now set the font and font size for the console output, defaults:
+
+            console_output_font="Lucida Console"
+            console_output_font_size=9
+
+        BTW, I use:
+
+            console_output_font="ProFontWindows"
+        or..
+            console_output_font="Consolas"
+            console_output_font_size=9
+
+
+        For clarity, these settings are also used for the input parameter
+        override and extra parameter inputs.
+
+
+    +   Added @tokens for the extra parameters input.
+
+        Using tokens, you can have extra arguments like this (note: regular
+        output is disabled in this example, as we are specifying our own
+        (images))..
+
+            -vframes 50 -r 1 "@parent\@item_[@ext]_%04d.png"
+
+        Which would grab 50 images from the first 50 seconds of video (one per
+        second) from an input file like this:
+
+            V:\Surreal\Un Chien Andalou - 1929.mpg
+
+        and output files named..
+
+            V:\Surreal\Un Chien Andalou - 1929_[mpg]__0001.png
+            V:\Surreal\Un Chien Andalou - 1929_[mpg]__0002.png
+            V:\Surreal\Un Chien Andalou - 1929_[mpg]__0003.png
+
+            And so on.
+
+        Here are all the available @tokens:
+
+            @inputfile      Full path of input file.
+            @item           Base name of input file, minus extension.
+            @ext            File extension of input file.
+            @oext           File extension of current output file.
+            @ofilename      Basename of current output file.
+            @outputfile     Complete path of current output file.
+
+            @sec            Seconds value of clock. Range is 00 to 59
+            @min            Minutes value of clock. Range is 00 to 59
+            @hour           Hours value of clock in 24-hour format. Range is 00 to 23
+            @mday           Current day of month. Range is 01 to 31
+            @mon            Current month. Range is 01 to 12
+            @year           Current four-digit year
+            @wday           Numeric day of week. Range is 1 to 7 which corresponds to Sunday through Saturday.
+            @yday           Current day of year. Range is 001 to 365 (366 in a leap year)
+
+            @parent         Parent directory of input file
+            @outdir         Output Directory (wherever ffe is currently outputting files)
+
+            @tempdir        System Temp directory
+            @datadir        ffe data directory (in portable mode, it is the program folder)
+            @desktop        Current user's desktop folder
+            @programfiles   Your Program Files directory
+            @homedir        Current user's user directory, e.g. "C:\User\Fandango"
+            @mydocuments    Current user's "My Documents" directory.
+
+
+        And because @token processing is performed on the extra arguments, you
+        can use @tokens in your custom buttons. Happy days!
+
+        @tokens are also available for the input parameter override. I haven't
+        played with this much, but the possibilities are mind-boggling. For
+        example, a big directory full of movie.mkv + matching movie.srt files
+        you want to combine, you could do something like this in your input
+        parameters:
+
+            -i "@parent\@item.srt"
+
+        And WHAM! ffe processes the entire folder, adding subtitles to all the
+        .mkv files and outputting them wherever.
+
+        That cute input override should work for single files, too.
+
+
+    +   @Tokens can be used for ALL path preferences in ffe and inside
+        ffe/ffe.ini. Try it!
+
+
+    +   ffprobe media reporting (instant .nfo files!).
+
+        If you have ffmpeg, you most likely have ffprobe sitting right next to
+        it. Let's use it. ffe can now generate a media report for your files
+        which you can view in ffe's console viewport and/or your favourite
+        viewer.
+
+        You can set the reporting format (ini, xml, csv, etc.) as well as the
+        output file location (dynamic @tokens supported) and file extension (the
+        default being "auto").
+
+        By the way, these values are gathered fresh each time you click the
+        button, so you can change them (from the app menu) and then create a
+        report with a /different/ format instantly.
+
+        The other settings are available inside ffe.ini, along with the ability
+        to add any extra parameters you may need to pass to ffpprobe, as well as
+        the ability to automatically unescape the output, if required.
+
+        Note: the "compact" report might wrap in your console viewport, but the
+        saved version will be just fine! It is only /vertically/ compact!
+
+        Yes, you can use URLs as input files for media reporting, the same as
+        regular ffmpeg file processing, grab all the info from an rtmp stream,
+        or whatever.
+
+
+    +   MediaInfo Support. Same as above, but instead using the excellent
+        MediaInfo:
+
+            http://mediaarea.net/en/MediaInfo
+
+        You want the CLI version, in 32 or 64 bit, depending on your OS. Install
+        it somewhere in your program files if you haven't already.
+
+        And again, you can pass it extra parameters inside fee.ini, if required.
+
+        Sadly, you cannot use URLs as input with MediaInfo.
+
+
+    +   Automatic audio file extension from codec.
+
+        If you are extracting an audio stream from a movie file; video set to
+        disabled, audio set to copy; ffe will probe the video file to discover
+        what audio codec is used and, assuming MATOF is enabled, automatically
+        set this as the output file extension.
+
+        If you have a batch job, the extension will temporarily show as ".wav",
+        but once the job starts, ffe will insert the correct extension. Yes, you
+        can easily rip the audio tracks from a bunch of movies at-once.
+
+        If you /choose/ an audio codec, ffe will of course honour your decision
+        and re-encode the audio to that format, as usual.
+
+        NOTE: If you move ffprobe.exe away from ffe.exe, this will not work.
+
+
+    +   Added a new command-line switch, "run", which works exactly the same way
+        as the old "go" switch, except ffe will quit when the job is done.
+
+        Note: when using the "run" switch, you will NOT be asked whether or not
+        you wish to abort the quit process (unlike setting quit_when_done=true).
+        ffe will simply quit.
+
+
+    +   Same again, but for shutdown, using the unsurprisingly named, "shutdown"
+        switch. Works exactly the same way as the "run" switch, above, except
+        that ffe will shutdown your computer at the end of the job.
+
+        Just like, "quit", if used with a "run" switch, THERE WILL BE NO PROMPT.
+        The machine will simply shutdown. Use with caution!
+
+        Don't worry if these are set inside a preset that you then run live in
+        ffe (as opposed to via the command-line). If there is a window visible,
+        ffe will always warn the user before a shutdown.
+
+
+    +   Pre-Job and Post-Job Commands.
+
+        You can now specify a set of windows shell commands to run before and/or
+        after ffmpeg job runs. You can set the name of this file inside ffe.ini,
+        or create one from ffe's system tray menu.
+
+        You can enter a simple file name, in which case it is assumed to be
+        inside your data directory (in portable mode, that is the same directory
+        as ffe.exe) or you can enter the full path to the file.
+
+        These are standard windows commands, EXACTLY LIKE YOU WOULD PUT IN A
+        .BAT (Windows Batch Script) FILE.
+
+        I use this to empty target folder then copy test files over from the
+        source folder for a fresh batch of tests, but the facility has many
+        potential uses.
+
+        Post-Run commands are handy for doing things like..
+
+            mkvpropedit "@outputfile" --edit track:s1 --set flag-default=1
+
+          (setting the subtitle track of a movie as the "Default Track",
+           which ffmpeg currently cannot do)
+
+        You can also set these file paths inside individual ffe presets for per-
+        preset pre- and/or post-run commands. These settings can be inherited
+        with presets, too.
+
+        If a pre-run commands file exists for the current preset, you will have
+        an "Edit Pre-Job Commands File" option in your ffe system tray menu.
+        Otherwise you will have a "Create Pre-Job Commands File" option. Same
+        for the Post-Run commands.
+
+        You can enable/disable this facility for individual jobs/presets from
+        the main GUI. If the commands file does not exist, the gui controls are
+        greyed out.
+
+        When enabled, you can right-click either of the two controls to specify
+        a new pre or post-job commands file at any time.
+
+        NOTE: ffe can either run the .bat file with the Windows shell, where the
+        Windows command interpreter processes the file like a regular batch
+        file, which should work fine, or else process the commands itself,
+        one-by-one.
+
+        Using the first method, you should name your commands file <name>.bat.
+        Using the built-in method, ffe doesn't care what extension you use, it
+        will run the commands, in order, one-by-one. Your call.
+
+        If you are doing complicated loops and GOTOs, you definitely want to use
+        the former method, like so..
+
+            run_commands_with_shell=true
+
+
+    +   Post-File Comands.
+
+        You might have looked at the example Post-Job command (above) and
+        thought, "But what if I'm running a batch?". Good Question!
+
+        A Post-File command is a command which is run on every file which is
+        output by ffmpeg. While your post-job batch script will run at the very
+        end of the job, the post-file command runs for each and every file you
+        create, as soon as it is created.
+
+        Of course it is designed for post-processing @outputfile, but just like
+        the pre- and post-job commands, it can be anything at all.
+
+        You can switch this facility on/off inside the main GUI (job buttons).
+
+        Right-click the control to get a fancy input dialog where you can enter
+        the actual command to be run. You can drag files into that input to have
+        their paths pasted in-place (where the caret is).
+
+        NOTE: UNLIKE the pre-job and post-job commands, this command is not
+        processed by the Windows Command Interpreter, it is run directly by ffe.
+
+        You will probably want to put quotes around any paths you use, which
+        includes "@outputfile", though because the command is run directly by
+        ffe you shouldn't need to put quotes around the exe's path, for example,
+        this is fine..
+
+            C:\Program Files\Video\Converters\MKVToolNIX\mkvpropedit.exe "@outputfile" --edit track:s1 --set flag-default=1
+
+        It's basically:
+
+            <PROGRAM> <ARGUMENTS>
+
+        However, if you try to do something like this..
+
+            C:\Program Files (x86)\MediaInfo\MediaInfo.exe "@outputfile" > "@outputfile.nfo"
+
+        ffe will recognise you are trying to do a shell redirection, grab the
+        Std I/O and save it to the specified file. How cool is that!
+
+
+    +   Drag-And-Drop Commands.
+
+        What?
+
+        Basically, this is a command you can set to be performed whenever you
+        drag and drop a new file onto ffe's file input. Currently available
+        commands are "go", which immediately runs the current job with the new
+        file, and "report" which immediately produces a media report using your
+        current media reporting preferences.
+
+        You can switch this functionality from the app menu.
+
+
+    +   Script Output (including batches).
+
+        Hold down the SHIFT key when you click the "Do It" button, and instead
+        of sending commands to ffmpeg, ffe will run through the job, saving the
+        ffmpeg commands to a regular Windows batch script you can use to run the
+        ffmpeg job wherever/whenever you like, send to others, whatever, even
+        when/where ffe isn't around.
+
+        You can setup long batch operations, with concatenation, use presets,
+        all with a single click, even automate the process, run from inside
+        other batch scripts.
+
+        Note: If your job contains pre-job shell commands, they too will appear
+        inside the batch file.
+
+        If your job includes concatenating files, the concatenation list will
+        be saved to the same folder as your batch script (which you get to
+        choose). The idea being, that is where you will run the batch from. So
+        long as you keep the files together (ffe-concat-list.txt and ffe.bat),
+        everything will work as expected. If you need to do something tricky,
+        edit your .bat file accordingly.
+
+        You can also set this as a launch switch, exactly the same as "go",
+        "run", etc. (so you could also set it as an Explorer context command)
+        The switch is "generate". It acts like "run" in that after completion of
+        the job, ffe will quit. The batch file (and concat list, if applicable)
+        will be saved to the current working directory.
+
+        The following example would generate a "ffe-concat-list.txt" and
+        "ffe.bat" in the current working directory. Running the batch file gets
+        you all the .mkv files inside "I:\Rip" converted to x265 and joined
+        together into one movie file (assuming you have this exact preset AND
+        hypothetical directory, and that joining is enabled, of course)..
+
+            ffe.exe generate(x265 HEVC AAC medium AAC) "I:\Rip\*.mkv"
+
+        When used this way, you won't see the main ffe GUI; ffe will simply
+        generate the batch file and then exit. The one or two files will be
+        immediately available for further processing by other devious processes.
+
+        When scripting, don't forget to specify output files, or else ensure
+        MATOF is enabled for your specified preset, or else ffe may present you
+        with a file save dialog! Testing first is always advised.
+
+
+    +   Import / Export..
+
+        There are new items in the preset selector's context (right-click) menu.
+        Also in ffe's system tray menu..
+
+        "Import Data" can import ANY ffe setting, be it preset, custom button or
+        main settings. ffe will present you with a dialog to choose which
+        settings, if available, you want to import (if the file only contains
+        presets, you will only get that option).
+
+        Note: if your import file contains only two main settings (inside an
+        [ffe] section), ffe will only write those two settings to your ffe.ini,
+        everything else will be untouched. Same for buttons; new buttons being
+        added onto the end of your current buttons, as expected.
+
+        NOT SO WITH PRESETS, which will be completely replaced, assuming you
+        have an existing preset with the same name. New presets get tagged onto
+        the end of your existing presets.
+
+        ffe will always create a time-stamped backup of your current ffe.ini
+        before performing import operations. This is placed with other backup
+        ini files, in your ffe data directory.
+
+        "Export Data" works the same way, but for exporting; you can export main
+        settings, buttons and/or presets. Export all three and you basically
+        create a condensed (no comments) version of your ffe.ini file.
+
+
+    +   Added "Open Log File" item to the tray menu.
+
+
+    +   Retain settings on exit.
+
+        ffe can remember what you were doing and restore it all the next time
+        you run ffe. You can toggle this behaviour from the app menu (Ctrl+E).
+
+        Note: when launched with a job ("go" or "run") on the command-line, this
+        behaviour will be temporarily disabled. It will /not/ be disabled if you
+        load a job from the command-line using the "load" switch.
+
+        NOTE: this doesn't affect your default preset. ffe creates a separate
+        temporary preset to house all your settings.
+
+        NOTE: If you run multiple instances of ffe, later-quitting instances
+        will, by design, overwrite the exit settings of earlier instances. The
+        /last/ instance is the one that will be remembered for tomorrow/next
+        session, though note, if you had five instances of ffe running and quit
+        instance 3, then open another instance of ffe, it (ffe6) would open with
+        instance 3's settings, as instance 3 was the "last quit".
+
+        Of course, if you are using multiple portable versions, none of this
+        applies, they will each retain their own settings.
+
+        FYI, the ffe.ini [section] is named "FFE-EXIT-SETTINGS".
+
+
+    +   You can drag files into the console output area. Its path will be pasted
+        into place (for working on parameters for ffmpeg). Same goes for the
+        input parameter override and extra arguments inputs.
+
+        NOTE: Input override parameters are not added to the MATOF string, as
+        this creates LONG file names.
+
+        The two wee buttons next to the input parameters override are "+", which
+        simply adds:
+
+            -i ""
+
+        to your input and places the caret bewtween the quotes. Then you can
+        drag a file in and its path goes precisely where required. You can do
+        this multiple times, ffe will place the new -i "" at the end and pop the
+        caret inbetween the quotes. It's something I do a lot, and one click
+        beats one click plus seven keystrokes any day!
+
+        And "x", which instantly deleted the entire contents of the input.
+        Another oft-used time-saver.
+
+
+    +   Greatly expanded the built-in lists of audio and video encoders.
+        Basically, I added them all. At least, all the ones you would find in an
+        official (free) binary. If you roll-your-own, you can add whatever you
+        need (libfdk_aac is already there).
+
+        NOTE: If you upgrade, YOU WON'T GET THESE. You might want to copy the
+        prefs from the new supplied ini file, or else copy your presets into a
+        fresh ini file, which has all the new goodies.
+
+        NO! That sounds too complex. Better to use ffe's new import facility and
+        the ffe-upgrade.ini. Drag-and-drop - you're done. See below for details.
+
+
+    +   Improved help ToolTips. Hover your mouse over any control (for the drop-
+        downs, hover over the chevron) to get mostly useful help and tips.
+
+
+    +   You can now also disable the helpful ToolTips, inside ffe.ini and from
+        the ffe app menu (restart required). I don't recommend this. No, I don't
+        recommend this. For a start, how will you remember the contents of all
+        your custom buttons? Go on, leave the tips enabled!
+
+
+    +   Added more console output, for those that like that sort of thing. Note:
+        I mean StdOut. You would need to be running ffe from inside another
+        process/debugger/code-monster to see this stuff.
+
+
+    +   You can now choose to NOT sort the presets drop-down.
+
+        By default, ffe sorts the list of presets to make it easier for regular
+        folk to find their chosen preset. But you might prefer ffe not do this.
+
+        With sorting disabled you get your presets presented in the order they
+        appear inside ffe.ini; most likely the order in which they were created,
+        but you may have mindfully changed this. Also, the default "ffe" preset
+        will, by default, always be at the top.
+
+
+    +   You can now pause/suspend the ffmpeg process by using the HotKey
+        "SCROLLLOCK" (aka. "ScrLk") while your job is running. Press SCROLLLOCK
+        again to resume. This can be handy if ffmpeg is eating all your CPU
+        cycles and you have some other short CPU-hungry task to perform.
+
+
+    +   You can now set whether or not you want ffe to kill the ffmpeg process
+        when it is itself quit. You could setup a job, start it, and then quit
+        ffe and ffmpeg will continue running in the background, until the job is
+        complete. Not something I recommend, but there it is.
+
+        Of course, this means you can also explicitly tell ffe to do the
+        opposite, killing any ffmpeg process when it quits, the default.
+
+        This setting can also be inherited from and set inside presets.
+
+            kill_ffmpeg_on_exit=true
+
+        Neither should happen, but you never can tell with ffmpeg+users.
+
+
+   ...  While I'm here, I should explain what "inherited from and set inside
+        presets" means. This behaviour obviously occurs with all the regular
+        settings you see inside the GUI, that's how presets work. Other settings
+        are more "global", and obviously wouldn't make sense to have on a
+        per-preset basis, for example, window transparency.
+
+        Simply put, most settings, whether or not they can be set in the GUI,
+        can be inherited from presets. Regardless of how the option is set
+        (either from the App Menu, or manually inside ffe.ini), e.g.
+        kill_ffmpeg_on_exit=true; when you load a preset that setting becomes
+        active, just like regular preset settings.
+
+        Unless a setting is explicitly set inside a preset, it will be left as-
+        is; a facility which can be put to a great many uses. This means that
+        whatever is in your default "ffe" preset will be used to setup all the
+        parameters for a command-line job, unless they are specifically set in
+        the loaded preset's own settings.
+
+        This means you can "stack" presets, loaded presets inheriting settings
+        from previously loaded presets (unless specifically set otherwise).
+        Using the add/replace option, you can also stack ffmpeg arguments, but
+        that's another story..
+
+        You could load a preset which sets, e.g., shutdown_when_done=true, and
+        then load another preset that contains the parameters for a job. The
+        shutdown_when_done setting will still be set to true, as it was not
+        explicitly set to false inside the second preset. Of course, clicking
+        the shutdown button is easier, but this is just an example.
+
+        When you load a preset, everything in the GUI (including all the ffe job
+        buttons) can be set/unset/specified by the preset, as well as the
+        following settings..
+
+            Setting:                    Type        Where Set:
+
+            kill_ffmpeg_on_exit         bool        ffe.ini
+            default_extension           bool        ffe.ini
+            batch_commands_timeout      int         ffe.ini
+
+
+        These settings will NOT be saved with a preset, they are read-only. They
+        can be set manually inside a preset (in ffe.ini). They also don't show
+        up in the GUI, being reserved for people who know what they are doing.
+        You will see them in your main [ffe] settings already.
+
+        batch_commands_timeout will beinherited and saved with presets.
+        quit_when_done and shutdown_when_done *will* be saved to presets, so
+        long as that's not your default preset. This is to prevent folk shooting
+        themselves in the foot. If you really want these things in your default
+        preset (which would be inherited by all presets not specifically
+        disabling this behaviour!), feel free to edit them into ffe.ini. ffe
+        will respect this.
+
+        If any of these non-visible settings have changed, ffe will post a
+        message to the console output stating this, e.g..
+
+            loading preset: Batch x265 (HEVC) & Shutdown
+            kill_ffmpeg_on_exit: enabled
+            shutdown_when_done=true
+
+
+    +   Vastly improved code comments.
+
+
+    +   Console Output can now be word-wrapped.
+
+
+    +   You can now set ffe to start in a minimized state.
+
+        NOTE: if you quit ffe in a minimized state, that is the way it will
+        launch next time. This works even when "Retain Exit Settings" is set to
+        false.
+
+        This setting enables you to set it permanently, or just for next launch.
+
+        The same is true for the maximized state, though why anyone would want
+        to maximize ffe, indeed any window, is beyond me.
+
+
+    ~   The "q" HotKey (the one ffmpeg uses) has been changed to "F4". Of course
+        ffe still sends an actual "q", but you no longer do. This prevents
+        people from unwittingly quitting the ffmpeg process while attempting to
+        setup parameters for the next job, which is doable.
+
+
+        IMPORTANT: The settings are not only enabled whilst ffmpeg is running,
+        they are LIVE. For example, you are merging 50 movie files with their
+        corresponding .srt files and half way through the job you switch (in
+        your extra parameters input)..
+
+            language=eng
+
+        to..
+
+            language=de
+
+        Every video file created FROM THAT POINT will have German as the
+        subtitle language title.
+
+        This is super-useful, but a big gotcha for the unwary. Now you know!
+
+
+    ~   ffe now uses matroska (.mkv) as its default container. You can change
+        this inside ffe.ini. This setting can also be set inside and inherited
+        from presets.
+
+            default_extension=mkv
+
+
+    ~   ffe will now load whatever file you specify on the command-line when
+        using the go() switch, regardless of whether or not a file is specified
+        inside the preset. Essentially, the command-line overrides ffe.ini
+        settings, e.g..
+
+            go(x265 medium preset crf=22 AAC(HQ) Audio) "I:\Rip\ffe\Movie.flv"
+
+        The output file name will be created dynamically, unless you have an
+        outputfile= specified inside your preset, which will be used whenever
+        possible.
+
+        If you have MATOF disabled and the input file contains batch commands
+        ("*" or "?" characters) MATOF will be automatically enabled.
+
+        You can specify a directory for outputfile, and ffe will create dynamic
+        file names within that directory.
+
+
+    ~   MATOF status is now saved and recalled with presets.
+
+
+    ~   You can now hold down the SHIFT key when you save over an existing
+        preset (including the default 'ffe' preset) to skip the warning dialogs.
+
+
+    ~   ffe will no longer attempt to stay inside your desktop, it interfered
+        with multi-monitor usage. It will now live happily on any one of your
+        many, many monitors.
+
+
+    ~   The "resize_order" preference has been changed to "resize_first", so it
+        makes sense. Old presets will be automatically update for a few ffe
+        versions.
+
+
+    ~   ffe will no longer save blank preferences (resize, crop, etc.) inside
+        your ffe.ini. Only ini hackers saw these, but still. Not only this, ffe
+        will compact out the blank prefs of any preset you re-save.
+
+
+    ~   ffe will now fix up any illegal characters in the MATOF output file name
+        so that it doesn't produce an error when using such things as filters
+        (with perhaps quotes and colons in them). Which is to say, it didn't
+        used to. *Ahem*.
+
+
+    ~   Replaced all relevant input boxes with my own fancy input box. This has
+        better text, accepts drag&drop and remembers its size and position.
+
+        The first time you use it, you get a half-screen-width input box in the
+        middle of the screen, which you will immediately want to get to the
+        optimum size and position for your workstation. From that point onwards,
+        ffe will remember the size and position of the inputbox, FOR EACH
+        INDIVIDUAL CONTROL.
+
+        If, like me, you want three different widths for inputting custom button
+        names, arguments and notes, ffe will make it so.
+
+        Some controls (like inputting short test frames number) still use the
+        standard Windows control. You are just typing a number, hitting enter,
+        nothing fancy required.
+
+
+    ~   The log_file preference is now log_location, as it can also be a folder.
+
+
+    ~   As soon as you click inside the output path input, MATOF is immediately
+        disabled. This should prevent some annoyance.
+
+
+    ~   The "outfile" pref has been renamed to "outputfile". It had to be done.
+        This version of ffe will update any legacy preferences it finds.
+
+
+    *   ffe will now correctly /add/ your selected preset arguments to the
+        existing preset arguments when 'add to ..my settings' is selected, which
+        didn't always happen.
+
+
+    *   Fixed incorrect placement of GUI on launch when previously quit whilst
+        minimized.
+
+
+    *   Lots and LOTS of minor and not-so-minor undocumented improvements and
+        fixes, error-checking and reporting, logic and so on. En-Joy!
+
+
+
+
+
+
+
+    ** end of ffe. long live ffe2! **
+
+
+  1.1   ("Koi's Folly")
+
+    ~*  ffe's logging location preference now makes more sense. Also, ffe will
+        no longer create a folder in your application data folder if you are
+        running in portable mode. You can also specify a log file location
+        other than the application directory when running in portable mode.
+
+        Similarly, ffe will no longer install the help file to your app data
+        folder in portable mode when you click the help button.
+
+
+
+  1.0   ("Squishy Nugget")
+
+    +   Portable usage is now fully supported. Simply drop your ini file next
+        to ffe.exe. You're done.
+
+    +   Added a special "portable install" switch, which is "portable", e.g..
+
+            c:\path\to\ffe.exe portable
+
+        This will copy a fresh ini file into place for you. This is useful for
+        new portable installs, or if you just can't be bothered locating / don't
+        need any settings from, your existing ini file.
+
+        You only need to use this one time, if at all.
+
+    +   ffe can now accept file paths on its command-line, so you can launch
+        with a video file ready-to-go. This also means you can use it in an
+        Explorer Context (right-click menu) command.
+
+    +   You can load presets at launch time by using the special parameter,
+        "load", followed by the name of the preset in braces..
+
+            C:\path\to\ffe.exe load(Preset Name Here) E:\path\to\video.flv
+
+        Files can be processed immediately, using the switch, "go", like so..
+
+            C:\path\to\ffe.exe go(Preset Name Here) E:\path\to\video.flv
+
+        If your preset contains specified in and out files, those will be,
+        used. If file names are supplied on the command-line, any file
+        names stored inside the preset will be temporarily ignored.
+
+        If MATOF is enabled, the output file name will contain all the ffmpeg
+        parameters used in the conversion, as usual.
+
+        See the ffe page for more details.
+
+    ~   STDERR reading has been improved in AutoIt. So now console output is
+        only updated when STDERR actually contains new data, eliminating the
+        flicker you get when building on recent versions of AutoIt.
+
+    ~   The console output window is now editable, so you can copy and paste out
+        of it, or whatever.
+
+    *   Fixed a bug where ffe could disable your "q" key during conversion.
+
+    ~   Removed the "Enter" HotKey ({F1} now starts the process).
+
+    ~   ffe now always scrolls to the bottom of the log output when complete,
+        regardless of whether or not log append is enabled.
+
+    +   Added the total time taken to the foot of log.
+
+    ~   Drag & Drop a new file onto file input now updates the output file input
+        [sic] automatically, regardless of whether or not MATOF is enabled, and
+        whether or not there was already a file path in the output file input.
+
+        While potentially annoying someone, this is much more generally useful
+        for ffe's intended usage.
+
+    +   If the ffmpeg binary (ffmpeg.exe) is not present, ffe will now present
+        the user with a dialog where they can locate it. If all that fails, to
+        avoid confusion, ffe will not draw the "Do It!" button.
+
+    ~   I updated the codec definitions to match the new formats. I'm currently
+        using ffmpeg rev12665. e.g. "xvid" is now "libxvid", "mp3" is now
+        "libmp3lame". They didn't make it backwards-compatible.
+
+    +   ffe got a new program icon! I Included a 48x48, version for tiled windows.
+
+    +   Also created new icons for the file locate buttons. Like the old ones,
+        but documents this time, not folders. What was I thinking?
+
+    +   Ctrl+F now brings up the Find dialog. Clever, huh!
+
+    +   Shift+Click the help button to instead open the help file with your
+        system's default .nfo file viewer. Clicking normally (to get the help in
+        the console output window) will now also activate the console window, if
+        it wasn't already.
+
+    *   Fixed a few other minor gui irregularities, things that happen in states
+        that I don't normally put ffe into (e.g. run with console window disabled).
+
+    ~   I ported across my window-sizing routines, so the ffe window will now
+        remain in-desktop, nomatter what you do.
+
+    +   ffe now stores its version number inside its preference file, and uses
+        this to decide if your ini file needs to be upgraded.
+
+    +   You can now override the log path (log_file), as well as disable logging
+        altogether.
+
+    +   ffe can now handle ffmpeg prompts, and pass a y/n response back to
+        ffmpeg. So far, I've only seen this prompting when ffmpeg needs to
+        overwrite a file, but there may be other prompts. If you see any others,
+        please let me know (ffe can already handle them, but it would be good to
+        know so that I can post specific title bar messages).
+
+    +   And more!
+
+    For hackers and compilers..
+
+    ~~  ICON INDEXES HAVE SHIFTED BY ONE. You must compile with a recent version
+        of AutoIt, or else revert the indexes to their previous values (-5, etc).
+
+        I've also added a couple more extra icons for the buttons. Use or ignore.
+
+    ~   AutoIt Update:  _GUICtrlEditScroll  ->  _GUICtrlEdit_Scroll
+        Associated constants are also updated.
+
+
+  0.8.1 ("Menacing Ovary")
+
+    +   added "(or just drag it in)" to the file input ToolTip, trivial perhaps,
+        but I forgot to mention that you can just drag files in there, which is
+        obviously often much faster than the other methods.
+
+  0.8   ("A Spoon of Mince and One Tattie")
+
+    +   Using new (UDF) find routine. It throws up a nice find dialog, instead.
+        It doesn't highlight the text, like the old find, but it does easily
+        allow you to skip to the "next" entry, which is handy.
+
+    *   removed the extraneous "-an" from the sample presets. OOps! sorree for
+        the lack of audio in your output files. Sample presets is a good idea
+        though, eh!
+
+  0.7.11 ("Beaver's Delight")
+
+    *   fixed the control hiding (find wasn't hiding if you disabled the console
+        output). The find feature was hacked on quickly for an earlier version,
+        so I'm fixing it up.
+
+    ~   <enter> no longer activates the encoding IF the "find" input is visible.
+        This is to prevent your intuitive <enter> (after inputting a search
+        word) setting off the encoding process again. I've done this a few times
+        myself. When find is active, <enter> will now perform the search.
+
+
+  0.7.10    ("Solace for Corners")
+
+    ~   maintenance release - non-code improvements only
+
+  0.7.9 ("Avalanche of Doubtless")
+
+    +   Improved the gui automation for single track conversions, and removed
+        the need for either the -an or -vn switches - simply select the item
+        in the drop-down (the item containing the word, "disabled").
+
+    ~   moved img/icons/ to icons/ - there are no other images in this program
+        if you are upgrading your source, remember to move your icons up ../
+
+
+  0.7.8 ("Morning Malarkey")
+
+    +   Expanded the audio and video track disable functionality; you can now
+        use the "disable video" option in the codec dropdown (there's also one
+        for disable audio) which will add/remove the correct switches from the
+        parameters, and enable/disable the correct properties and MATOF string.
+
+        It's trivially easy to rip either the video track or audio track from a
+        piece of video, and convert it in the process, too.
+
+        NOTE:   The "quick config types" (which are native to ffmpeg) will still
+                override any of these settings.
+
+
+    +   Added more extension types to the mix, and improved some legacy code (a
+        nice way of saying it was shite before)
+
+
+    ~   Decreased the minimum height - folks that don't use the console output
+        can have a neater looking window.
+
+
+  0.7.7 ("Moaning Mindy")
+
+    ~   MATOF now senses when you've added the -vn (no video) switch, and gives
+        the output file an audio extension, instead. It gets the extension from
+        whichever audio codec you have selected.
+
+        This makes it very simple to do video >> audio conversions.
+
+
+
+
+Bugs:
+
+
+
+Debug Levels:
+
+    You can set debug_level=<integer> in your ffe.ini to produce varying levels
+    of debug output. Useful for tracking down bugs and other errors.
+
+    Note: each level contains all the information from the previous level.
+
+    0: No debugging output (unless I missed a temporary line in the current beta!).
+    1: Errors only (the default).
+    2. The most basic functional messages.
+    3. Information on important functions and variables.
+    4. Major functions logged here.
+    5. Most functions logged here.
+    6. Less important / inner functions and vars logged here.
+    7. Lots of detail here. Good working debug level for developing.
+    8. More detail, including all loaded preference variables.
+    9. Includes string inner workings.
+    10. Entire string and file output. Insane amounts of data.
+
+Temporary debug lines are usually level:0, so you can leave debug_level at the
+default (1) and only see errors and your temporary messages, without too much
+detail getting in the way.
+
+
+
+Quirks & Caveats:
+
+	When generating batch scripts of wildcard batch runs, if you specify a non-
+	existent path (that may exist then generated script is run) ffe will "fix"
+	the path and use the fall-back, instead.
+
+	Specifying single output files in presets is fine. If you are specifying
+	paths and letting ffe handle the output file names is the way to go.
+
+	outputfile can be a file or directory name or path, with or without
+	wildcards @tokens, depending on what you are trying to accomplish. You can
+	also traverse relative directories, so..
+
+		outputfile=@parent\..\OUT
+
+	.. is also fine.
+
+	If you specify a file path when running a batch (multiple input files), ffe
+	will use the path part as the destination directory, ignoring the file name
+	part.
+
+	Like many of ffe's settings and parameters, experimentation is the key to
+	best utilising this "flexibility".
