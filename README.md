@@ -140,7 +140,7 @@ Click here to go straight to the downloads!"/></a> <a name="section-Intro"></a>
 </div>
 <h2>Installation..
 </h2>
-<p>Installation is simple. Here is the entire process. Also available in plain text, <a name="link-internal-ffe-quickstart"></a><a href="https://corz.org/public/machine/Windows/Software/ffe/QuickStart.txt?view" title="ffe quickstart guide in plain text">here</a>.
+<p>Installation is simple. Here is the entire process. Also available in plain text, <a name="link-internal-ffe-quickstart"></a><a href="Resources/QuickStart.txt" title="ffe quickstart guide in plain text">here</a>.
 </p>
 <ol>
 <li>
@@ -558,42 +558,16 @@ Click here to go straight to the downloads!"/></a> <a name="section-Intro"></a>
 </div>
 <h2>Itstory..
 </h2>
-<p><strong>ffe</strong>'s itstory is too lengthy to include here. If you want to know what's been changed, fixed, updated, broken, and so on, check out the <a href="https://corz.org/public/machine/Windows/Software/ffe/Source/Itstory.txt?view" title="ffe - Itstory.txt ">itstory</a>
+<p><strong>ffe</strong>'s itstory is too lengthy to include here. If you want to know what's been changed, fixed, updated, broken, and so on, check out the <a href="Itstory.txt" title="ffe - Itstory.txt ">itstory</a>
 </p><a name="section-Quick_Start"></a>
 <div>
 </div> <a name="quickstart-ffe"></a>
 <h2>Quick Start..
 </h2>
-<p>There's a short, quick-start type guide, <a name="link-internal-ffe-quickstart-go"></a><a href="https://corz.org/public/machine/Windows/Software/ffe/QuickStart.txt?view" title="ffe quickstart guide in plain text">here</a>.
+<p>There's a short, quick-start type guide, <a name="link-internal-ffe-quickstart-go"></a><a href="Resources/QuickStart.txt" title="ffe quickstart guide in plain text">here</a>.
 </p>
 <div>
 </div>
-<h2>More info added continually..
-</h2>
-<p>Meanwhile, you can get details of all the new features, as well as lots of tricks, tips and hints, from the latest <a name="link-internal-ffe-itstory"></a><a href="https://corz.org/public/machine/Windows/Software/ffe/Itstory.txt?view" title="changes, what's new, that sort of thing.">ffe itstory</a>. These days it's a big read but well worth it.
-</p>
-<p>Or check out some screencaps, <a name="link-internal-ffe-screencaps"></a><a href="https://corz.org/windows/software/ffe/ffe-screencaps.php" title="screencaps of ffe in action, downloading from URLS, uploading to FTP, that sort of thing..">here</a>.
-</p>
-<p>Want some funky transparent images for your drop window? Access my stash of ffe goodies <a name="link-internal-ffe-files"></a><a href="https://corz.org/windows/software/ffe/files/" title="Transparent Images for your ffe drop window">here</a>.
-</p>
-<p>You may notice ffe is comprehensively self-documented - there are ToolTips for everything. Hover your mouse anywhere in ffe for useful (often dynamically updated) information.
-</p><a name="section-Bugs"></a>
-<h2>Known bugs, foibles and limitations..
-</h2> If you place the OK button of some dialog you created with a <strong>Right-Now-Click™</strong> action directly over another control that has <strong>Right-Now-Click™</strong> action, you may, when you okay the first dialog, activate the <strong>Right-Now-Click™</strong> event on the second control. I think it's a small price to pay for <strong>Right-Now-Click™</strong> functionality!
-<p>If you set <code>double_check_rclicks=false</code> in your ini it will prevent this occasional phenomena, at the expensive of occasionally not registering your first right-click on a control. Your call.
-</p>
-<p> The best option is leave it enabled and don't place dialogs where their OK button is over another <strong>Right-Now-Click™</strong> enabled control!
-</p>
-<p>FIVE times I managed to squeeze that in. Five! lol
-</p>
-<p>By the way; in case you missed it; <strong>Right-Now-Click™</strong> is my fun description for the alternative to a control that under normal program-writing circumstances would have a context menu. The thing is; if that menu were to have <em>only one item</em>, it becomes instantly redundant, forcing the user to perform two clicks for a single action. I think that's barmy.
-</p>
-<p>So new-and-improved <strong>Right-Now-Click™</strong> steps in and takes you straight to the <em>only action there is</em>. Believe me; once you try <strong>Right-Now-Click™</strong>, you won't go back.
-</p>
-<div>
-</div>
-<p>Eight.
-</p>
 </div>
 
 ## While I try to keep this Git repo up-to-date, the latest source can always be found [here](https://corz.org/windows/software/ffe/)
