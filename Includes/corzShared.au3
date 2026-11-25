@@ -1,5 +1,5 @@
 #include-once
-global $corz_shared_version = "1.10.26"
+global $corz_shared_version = "1.10.34"
 
 ; corz.org apps essential shared functions.
 
@@ -56,6 +56,10 @@ global $about_app = "", $about_url = "", $about_log = "", $about_launch = "", $a
 ; This combo gets used a lot.
 global const $STR_STRIP_ENDS = $STR_STRIPLEADING + $STR_STRIPTRAILING
 global const $SEPARATOR = "--------------------------------------------------------------------------------"
+
+; Classic Windows MAX_PATH, including the terminating null.
+; Usable characters are one less than this value.
+global const $MAX_PATH_LEN = 260
 
 ; Unreserved URL characters (RFC 3986). Everything else gets percent-encoded.
 global const $URL_UNRESERVED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
@@ -947,10 +951,44 @@ endfunc
 ; Fix potentially messed-up slashes.
 func FixPathSlashes($string)
 	if StringInStr($string, "://") then return $string ; but not for URLs
+	$string = ExpandMappedDrive($string)
 	; Watch out! We don't want to "fix" flags, like: del /f /q "C:\some/path\*"
 	$string = StringRegExpReplace($string, "(.+)([^ ])/", "\1\2\\")
+	if StringLeft($string, 2) = "\\" then return "\\" & StringReplace(StringTrimLeft($string, 2), "\\", "\")
 	$string = StringReplace($string, "\\", "\")
 	return $string
+endfunc
+
+
+; Convert mapped drive letters to UNC paths. Takes any text; each mapped
+; drive pattern (N:\ or N:/) becomes its \\server\share form.
+; DriveMapGet() resolves first, with an HKCU registry fallback for mappings
+; invisible to the process token. Returns the text unchanged when nothing
+; is mapped or when a mapping cannot be resolved. Reads no ini.
+func ExpandMappedDrive($path)
+	if StringLeft($path, 4) = "\\?\" then return $path
+	if StringInStr($path, ":") = 0 then return $path
+	if not StringRegExp($path, "[A-Za-z]:[\\/]") then return $path
+	local $offset = 1
+	while true
+		local $colon = StringInStr($path, ":", 0, 1, $offset)
+		if $colon = 0 then exitloop
+		local $letter = StringMid($path, $colon - 1, 1)
+		local $after = StringMid($path, $colon + 1, 1)
+		$offset = $colon + 1
+		if not StringIsAlpha($letter) then continueloop
+		if $after <> "\" and $after <> "/" then continueloop
+		if $colon > 2 then
+			if StringIsAlNum(StringMid($path, $colon - 2, 1)) then continueloop
+		endif
+		local $unc = DriveMapGet($letter & ":")
+		if $unc = "" then $unc = RegRead("HKCU\Network\" & StringUpper($letter), "RemotePath")
+		if $unc = "" then continueloop
+		if StringRight($unc, 1) = "\" then $unc = StringTrimRight($unc, 1)
+		$path = StringReplace($path, $letter & ":\", $unc & "\", 0, 0)
+		$path = StringReplace($path, $letter & ":/", $unc & "/", 0, 0)
+	wend
+	return $path
 endfunc
 
 
@@ -1517,12 +1555,11 @@ endfunc
 
 ; Returns the parent directory, adding a long-path prefix when required.
 func GetParent($gp_dir)
-	local const $MAX_PATH_LENGTH = 260
 	local $had_long_path_prefix = StringLeft($gp_dir, 4) = "\\?\"
 	local $parent_path = __LFN_Target_UnSetUnicodePrefix($gp_dir)
 	local $path_parts = StringSplit($parent_path, "\")
 	$parent_path = StringTrimRight($parent_path, StringLen($path_parts[$path_parts[0]]) + 1)
-	if $had_long_path_prefix or StringLen($parent_path) >= $MAX_PATH_LENGTH then return __LFN_Target_SetUnicodePrefix($parent_path)
+	if $had_long_path_prefix or StringLen($parent_path) >= $MAX_PATH_LEN then return __LFN_Target_SetUnicodePrefix($parent_path)
 	return $parent_path
 endfunc
 
@@ -1591,6 +1628,55 @@ func RemoveExtension($some_name)
 	local $add = 0
 	if StringInStr(BaseName($some_name), ".") then $add = 1 ; might not have an extension
 	return StringTrimRight($some_name, StringLen(GetExtension($some_name)) + $add)
+endfunc
+
+
+; Shorten a full file path so its plain length stays under MAX_PATH.
+; WHY: Windows file calls fail past the classic limit, so MATOF names
+; need one choke point that trims the name while keeping the folder
+; and extension intact. Reads the global $MAX_PATH_LEN limit and the
+; StripLongPathPrefix, GetExtension, RemoveExtension helpers. Takes
+; $full_path with the intended absolute path. Returns the fitted path
+; (unchanged when it already fits) and sets @extended to 1 when the
+; stem was shortened, else 0. Only the tail of the file stem is cut,
+; so the leftmost parameters survive. Never touches the folder part.
+func MatofFitPathToMaxPath($full_path)
+	local $stripped = StripLongPathPrefix($full_path)
+	if StringLen($stripped) < $MAX_PATH_LEN then return SetExtended(0, $full_path)
+	local $pos = StringInStr($stripped, "\", 0, -1)
+	local $dir = ""
+	local $base = $stripped
+	if $pos then
+		$dir = StringLeft($stripped, $pos - 1)
+		$base = StringMid($stripped, $pos + 1)
+	endif
+	local $ext = GetExtension($base)
+	local $stem = $base
+	local $ext_part = ""
+	if $ext <> "" then
+		$stem = RemoveExtension($base)
+		$ext_part = "." & $ext
+	endif
+	local $budget = ($MAX_PATH_LEN - 1) - StringLen($dir) - 1 - StringLen($ext_part)
+	if $budget < 1 then $budget = 1
+	$stem = StringLeft($stem, $budget)
+	local $fitted = $stem & $ext_part
+	if $dir <> "" then $fitted = $dir & "\" & $fitted
+	return SetExtended(1, $fitted)
+endfunc
+
+
+; Build the sidecar path for a fitted output file.
+; WHY: the params text file must sit next to the converted file and
+; must itself obey the same length limit. Reads nothing else. Takes
+; $final_path with the fitted output path and $sidecar_ext with the
+; wanted extension without a dot. Returns the fitted sidecar path and
+; sets @extended to 1 when it needed its own shorten, else 0.
+func MatofSidecarPathForOutput($final_path, $sidecar_ext)
+	local $candidate = RemoveExtension($final_path) & "." & $sidecar_ext
+	local $fitted = MatofFitPathToMaxPath($candidate)
+	local $was = @extended
+	return SetExtended($was, $fitted)
 endfunc
 
 
@@ -5966,12 +6052,14 @@ endfunc
 ; $icon_id number icon index in $icon_path, ignored when empty; negative ids address dll resources.
 ; $parent number window handle owning the dialog, 0 means no owner; modal input is blocked here while open; a dead handle strands the dialog.
 ; $default_button 1-based number taking keyboard focus, clamped into range; out of range falls back to button 1.
-; $checkbox_text caption for the remember checkbox, one short line; blank keeps the standard text.
+; $checkbox_text caption for the checkbox, one short line; blank keeps the standard text.
+; $option_checkbox shows an independent, initially checked option when remember is false.
+; With option_checkbox, @extended returns GUI_CHECKED or GUI_UNCHECKED; no choice is saved.
 ; Returns the 1-based button number, or "" closed with X or on timeout (@error 1 on timeout).
 ;
 func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $modal=true, $remember=false, $resizable=false, _
 				$suspend="", $resume="", $resume_failed_msg="", $inipath=$ini_path, $section=$app_name, _
-				$lock_height=true, $remember_width=true, $icon_path="", $icon_id=0, $parent=0, $default_button=1, $checkbox_text="")
+				$lock_height=true, $remember_width=true, $icon_path="", $icon_id=0, $parent=0, $default_button=1, $checkbox_text="", $option_checkbox=false)
 
 	local $event_mode = AutoItSetOption("GUIOnEventMode", 0)
 	local $coord_mode = AutoItSetOption("GUICoordMode", 1)
@@ -6006,7 +6094,7 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 	local $split_lines = StringSplit($text, @LF, $STR_ENTIRESPLIT)
 	local $label_h = UserDialogLabelHeight($split_lines[0], $dialog_first_h, $dialog_line_h)
 	local $check_h = 0
-	if $remember then $check_h = $dialog_check_h
+	if $remember or $option_checkbox then $check_h = $dialog_check_h
 	; A huge message must never push the buttons off-screen. Clip the
 	; label to the desktop; overflow text simply does not paint.
 	local $max_label_h = @DesktopHeight-($USER_DIALOG_TOP_MARGIN+$USER_DIALOG_MID_GAP+$check_h+$BUTTON_H+$USER_DIALOG_PADDING*2)-64
@@ -6054,10 +6142,11 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 	GUICtrlSetResizing(-1, BitOr($GUI_DOCKLEFT, $GUI_DOCKTOP, $GUI_DOCKRIGHT))
 
 	local $check_dont_bug = 0
-	if $remember then
+	if $remember or $option_checkbox then
 		if $checkbox_text = "" then $checkbox_text = "Always perform the chosen action."
 		$check_dont_bug = GUICtrlCreateCheckbox($checkbox_text, $USER_DIALOG_PADDING+$USER_DIALOG_CHECKBOX_OFFSET, $USER_DIALOG_TOP_MARGIN+$label_h+$USER_DIALOG_MID_GAP, _
 																													$win_w-($USER_DIALOG_PADDING*2), $dialog_checkbox_h)
+		if $option_checkbox and not $remember then GUICtrlSetState($check_dont_bug, $ON)
 		GUICtrlSetFont($check_dont_bug, $dialog_face[1], $dialog_face[2], $dialog_face[3], $dialog_face[0])
 		GUICtrlSetResizing(-1, BitOr($GUI_DOCKLEFT, $GUI_DOCKTOP, $GUI_DOCKRIGHT))
 	endif
@@ -6075,7 +6164,7 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 		GUICtrlSetResizing(-1, BitOr($GUI_DOCKLEFT, $GUI_DOCKBOTTOM, $GUI_DOCKSIZE))
 	next
 
-	; Fit the dialog to its text, so no line wraps onto clipped lines. Only ever grows.
+	; Fit the dialog to the wrapped text measured in the prompt control font.
 	local $floor_client = $win_w
 	local $fit_client_w = $win_w
 	local $fit_pos = WinGetPos($dialog)
@@ -6091,14 +6180,13 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 		local $fit_w = $win_w
 		if $fit[1]+$chrome_w > $fit_w then $fit_w = $fit[1]+$chrome_w
 
-		; Height follows the final label width, so the dialog grows only
-		; for lines that really wrap. No wrap, no grow.
-		local $fit_height = FitDialogText($prompt, $button_ids[1], $text, $buttons, $count, $user_dialog_indent, $fit_w-$chrome_w, $dialog)
-		local $fit_label_h = UserDialogLabelHeight($fit_height[2], $dialog_first_h, $dialog_line_h)
-		if $fit_label_h < $label_h then $fit_label_h = $label_h
+		; Measure at the final label width instead of estimating each row's
+		; height from the configured point size. Retain the estimate only
+		; when Windows cannot measure the prompt.
+		local $fit_label_h = FitLabelHeight($prompt, $text, $fit_w-$chrome_w-$user_dialog_indent-$USER_DIALOG_PADDING-$USER_DIALOG_TEXT_RIGHT_PAD)
+		if $fit_label_h <= 0 then $fit_label_h = $label_h
 		if $fit_label_h > $max_label_h then $fit_label_h = $max_label_h
 		local $fit_h = $USER_DIALOG_TOP_MARGIN+$fit_label_h+$USER_DIALOG_MID_GAP+$check_h+$BUTTON_H+$USER_DIALOG_PADDING
-		if $fit_h < $dialog_h then $fit_h = $dialog_h
 
 		; Oversize fits pin to the monitor work area and re-wrap inside it.
 		local $work = UserDialogWorkArea($dialog)
@@ -6107,12 +6195,10 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 			local $max_outer_h = $work[3]-$work[1]
 			if $fit_w > $max_outer_w then
 				$fit_w = $max_outer_w
-				$fit_height = FitDialogText($prompt, $button_ids[1], $text, $buttons, $count, $user_dialog_indent, $fit_w-$chrome_w, $dialog)
-				$fit_label_h = UserDialogLabelHeight($fit_height[2], $dialog_first_h, $dialog_line_h)
-				if $fit_label_h < $label_h then $fit_label_h = $label_h
+				$fit_label_h = FitLabelHeight($prompt, $text, $fit_w-$chrome_w-$user_dialog_indent-$USER_DIALOG_PADDING-$USER_DIALOG_TEXT_RIGHT_PAD)
+				if $fit_label_h <= 0 then $fit_label_h = $label_h
 				if $fit_label_h > $max_label_h then $fit_label_h = $max_label_h
 				$fit_h = $USER_DIALOG_TOP_MARGIN+$fit_label_h+$USER_DIALOG_MID_GAP+$check_h+$BUTTON_H+$USER_DIALOG_PADDING
-				if $fit_h < $dialog_h then $fit_h = $dialog_h
 			endif
 			if $fit_h+$chrome_h > $max_outer_h then $fit_h = $max_outer_h-$chrome_h
 		endif
@@ -6124,7 +6210,7 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 			$button_y = $fit_h-$USER_DIALOG_PADDING-$BUTTON_H
 			GUICtrlSetPos($prompt, $user_dialog_indent, $USER_DIALOG_TOP_MARGIN, $fit_cw-$user_dialog_indent-$USER_DIALOG_PADDING-$USER_DIALOG_TEXT_RIGHT_PAD, $fit_label_h)
 
-			if $remember then
+			if $remember or $option_checkbox then
 				GUICtrlSetPos($check_dont_bug, $USER_DIALOG_PADDING+$USER_DIALOG_CHECKBOX_OFFSET, _
 					$USER_DIALOG_TOP_MARGIN+$fit_label_h+$USER_DIALOG_MID_GAP, $fit_cw-($USER_DIALOG_PADDING*2), $dialog_checkbox_h)
 			endif
@@ -6191,7 +6277,7 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 	ControlFocus($dialog, "", $button_ids[$focus_button])
 	$user_dialog_prompt = $prompt
 	$user_dialog_check = $check_dont_bug
-	$user_dialog_remember = $remember
+	$user_dialog_remember = $remember or $option_checkbox
 	$user_dialog_buttons = $button_ids
 
 	if $resizable then
@@ -6269,11 +6355,13 @@ func UserDialog($title, $text, $buttons, $x=default, $y=default, $timeout=0, $mo
 		if $remember and GUICtrlRead($check_dont_bug) = $ON then IniWrite($inipath, $section, $pref_name & "_dont_bug_me", $choice)
 	endif
 
+	local $option_state = 0
+	if $option_checkbox then $option_state = GUICtrlRead($check_dont_bug)
 	GUIDelete($dialog)
 	if $app_hicon then _WinAPI_DestroyIcon($app_hicon)
 	AutoItSetOption("GUIOnEventMode", $event_mode)
 	AutoItSetOption("GUICoordMode", $coord_mode)
-	return SetError($error, 0, $choice)
+	return SetError($error, $option_state, $choice)
 endfunc
 
 

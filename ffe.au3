@@ -1,6 +1,6 @@
-#AutoIt3Wrapper_Res_Fileversion=2.5.7.3
-global const $VERSION = "2.5.7.3"
-global $special_build = "Deep Sea Creatures"
+#AutoIt3Wrapper_Res_Fileversion=2.5.8.0
+global const $VERSION = "2.5.8.0"
+global $special_build = "Eggy Noggin"
 
 #cs
 
@@ -185,6 +185,15 @@ global $gif_method = false
 global const $EXIT_PRESET			= "FFE-EXIT-SETTINGS"
 global const $PRESET_BACKUP_STRING	= "--backup--"
 
+; Extension for the params text file written when a MATOF name is shortened.
+global const $MATOF_SIDECAR_EXT = "txt"
+; Shortest file part appended to a folder: a backslash plus a one
+; character stem, a dot and a one character extension ("a.b").
+global const $MATOF_MIN_FILE_PART = 4
+; Shown when a chosen output folder already fills MAX_PATH.
+global const $MATOF_LONG_PATH_TITLE = "Path too long"
+global const $MATOF_LONG_PATH_MSG = "Path is too long. Move your target folder to somewhere nearer the root of the drive"
+
 
 AutoItSetOption("GUIOnEventMode", 1)
 AutoItSetOption("TrayMenuMode", 11)
@@ -253,6 +262,10 @@ if FileExists($debug_log) then FileDelete($debug_log)
 ; Memory is cheap! (ok, WAS cheap!)
 global $inputfile, $old_inputfile, $extra_args, $v_codec, $a_codec, $resize_preset, $args, $short_args, $msgs, $count_ints
 global $installed_ini, $matof_string, $old_matof, $no_video, $no_audio
+; Intended over-long output and trim flag for the current MATOF name.
+; $matof_intended_path holds the pre-trim path, $matof_trimmed tells
+; whether $outputfile was shortened to fit MAX_PATH.
+global $matof_intended_path = "", $matof_trimmed = false
 ; Raw user/preset template, last rendered preview, and current undecorated path.
 ; Generated names must never become the template for the next update.
 global $output_template = "", $last_outputfile = "", $output_basefile = ""
@@ -2751,9 +2764,22 @@ func DoIt()
 			$args = StringReplace($args, $old_of, $outputfile)
 		endif
 
+		; Collision suffixes can push MATOF names over MAX_PATH.
+		; Refit here and keep $args pointing at the real target.
+		local $pre_fit = $outputfile
+		MatofApplyMaxPathLimit()
+		if $outputfile <> $pre_fit then $args = StringReplace($args, $pre_fit, $outputfile)
+
 		debug("$outputfile: " & $outputfile, @ScriptLineNumber, 7);debug
 
 		; $outputfile is now SET!
+
+		; Shortened names keep full params in a sidecar text file.
+		; Batch scripts only record the fitted name for now.
+		if $matof_trimmed and $do_output = $ON and not $generate_script then
+			local $sidecar_written = MatofWriteParamsSidecar($outputfile, $matof_intended_path, $args)
+			if $sidecar_written then ConsoleAdd("Output name shortened for MAX_PATH, full params in: " & $sidecar_written, @ScriptLineNumber)
+		endif
 
 		; Just in case..
 		local $out_parent = GetParent($outputfile)
@@ -4186,6 +4212,12 @@ func DoArgsCreate($batch="null", $run_root="", $run_subdir="")
 		if $matof_string then $old_matof = $matof_separator & $matof_string
 	endif
 
+	; Keep every preview under MAX_PATH; the run loop refits after
+	; collision suffixes. Reset per rebuild so a shorter edit clears.
+	$matof_trimmed = false
+	$matof_intended_path = ""
+	MatofApplyMaxPathLimit()
+
 	; ffe is handling the output file path.. (not disabled)    go(SINGLE FILE TEST)
 	if $do_output = $ON then
 		; Updates live during batch run..
@@ -4321,6 +4353,79 @@ func BuildMatofOutput($base_path, $suffix, $extension, $separator)
 endfunc
 
 
+; Smallest file part that must fit next to a chosen output folder.
+; WHY: a dropped folder is judged against the actual converting file,
+; not a stub, so a long input name rejects an earlier folder. Reads
+; $inp_inputfile, $MATOF_MIN_FILE_PART and BaseName. Returns a
+; backslash plus the input base name length for a single file, else
+; the stub length. Wildcard, folder and empty inputs fall back to the
+; stub; batch files are measured individually by the run loop fit.
+func MatofMinFileLen()
+	local $current = ffeDeTokenizeString(GUICtrlRead($inp_inputfile))
+	if not $current or IsWild($current) or IsDir($current) then return $MATOF_MIN_FILE_PART
+	return StringLen("\") + StringLen(BaseName($current))
+endfunc
+
+
+; Tell whether a folder leaves room for the shortest acceptable name.
+; WHY: trimming the file stem cannot fix a folder that already fills
+; MAX_PATH, so such folders are rejected before they become output.
+; Reads $MAX_PATH_LEN, nothing else. Takes $folder with the candidate
+; directory and $min_file_len with the shortest file part including
+; its joining backslash (see MatofMinFileLen). Returns true when both
+; still fit, else false. Ignores any trailing backslash, except on a
+; drive root such as "C:\".
+func MatofFolderHasRoom($folder, $min_file_len)
+	local $stripped = StripLongPathPrefix($folder)
+	while StringRight($stripped, 1) = "\" and StringLen($stripped) > 3
+		$stripped = StringTrimRight($stripped, 1)
+	wend
+	return (StringLen($stripped) + $min_file_len) < $MAX_PATH_LEN
+endfunc
+
+
+; Fit the global $outputfile under MAX_PATH and record the intent.
+; WHY: every MATOF name flows through here, so one call keeps both
+; the preview and the batch run legal without touching callers.
+; Reads $outputfile and $MAX_PATH_LEN, writes $outputfile when it was
+; too long, sets $matof_intended_path to the pre-trim path on the
+; first trim and $matof_trimmed to true. Returns 1 when trimmed,
+; else 0. Never clears a previous trim; callers reset per preview.
+func MatofApplyMaxPathLimit()
+	local $intended = $outputfile
+	local $fitted = MatofFitPathToMaxPath($intended)
+	local $was = @extended
+	debug("MatofApplyMaxPathLimit len: " & StringLen(StripLongPathPrefix($intended)) & " was: " & $was, @ScriptLineNumber, 7);debug
+	if not $was then return 0
+	$outputfile = $fitted
+	if not $matof_trimmed then $matof_intended_path = $intended
+	$matof_trimmed = true
+	return 1
+endfunc
+
+
+; Write the full params next to a shortened output file.
+; WHY: the trimmed name cannot hold every parameter, so the exact
+; intended path plus the command line are kept in a text file with
+; the same base name. Reads $matof_string, $matof_separator and
+; $MATOF_SIDECAR_EXT. Takes $final_path with the fitted output path,
+; $intended_path with the pre-trim path and $params_text with the
+; ffmpeg command line as run. Returns the sidecar path, or "" when
+; nothing was written. Skips files when output is disabled upstream.
+func MatofWriteParamsSidecar($final_path, $intended_path, $params_text)
+	local $sidecar = MatofSidecarPathForOutput($final_path, $MATOF_SIDECAR_EXT)
+	local $text = "intended output:" & $LOG_LF & $intended_path & $LOG_LF & $LOG_LF & _
+		"actual output:" & $LOG_LF & $final_path & $LOG_LF & $LOG_LF & _
+		"matof params:" & $LOG_LF & $matof_string & $LOG_LF & $LOG_LF & _
+		"command line:" & $LOG_LF & $params_text & $LOG_LF
+	local $handle = FileOpen($sidecar, $FO_OVERWRITE + $FO_CREATEPATH + $FO_UTF8_NOBOM)
+	if $handle = -1 then return ""
+	FileWrite($handle, $text)
+	FileClose($handle)
+	return $sidecar
+endfunc
+
+
 func RFCreateArgs()
 	$altered_resize_first = true
 	AutoCreateArgs()
@@ -4412,10 +4517,15 @@ func GetDroppedItem()
 
 
 			case $inp_outputfile
-				; Replace data..
-				$ini_outputfile = $real_file
-				SetOutputTemplate($real_file)
-				DoArgsCreate()
+				if IsDir($real_file) and not MatofFolderHasRoom($real_file, MatofMinFileLen()) then
+					MsgBox(0, $MATOF_LONG_PATH_TITLE, $MATOF_LONG_PATH_MSG, 0, $ffeGUI)
+					ConsoleAdd("Rejected output folder (no room under MAX_PATH): " & $real_file, @ScriptLineNumber)
+				else
+					; Replace data..
+					$ini_outputfile = $real_file
+					SetOutputTemplate($real_file)
+					DoArgsCreate()
+				endif
 
 
 			case $combo_presets
@@ -8742,6 +8852,11 @@ func BrowseForOutputFile()
 	if not $tmp_output then return 0
 	if not StringInStr($tmp_output, ".") then $tmp_output &= "." & $default_extension
 	local $mum = GetParent($tmp_output)
+	if not MatofFolderHasRoom($mum, MatofMinFileLen()) then
+		MsgBox(0, $MATOF_LONG_PATH_TITLE, $MATOF_LONG_PATH_MSG, 0, $ffeGUI)
+		ConsoleAdd("Rejected output folder (no room under MAX_PATH): " & $mum, @ScriptLineNumber)
+		return 0
+	endif
 	IniWrite($ini_path, $my_name, "save_output_dir", $mum)
 	ConsoleAdd("Output dir set to: " & $mum, @ScriptLineNumber)
 	$outputfile = $tmp_output
@@ -10638,7 +10753,7 @@ endfunc
 ;::dev::..
 ; Copy latest binaries to app folders (overwrites existing binary)..
 ; Your copy of ffe may be somewhere else..
-#AutoIt3Wrapper_Run_After=copy "%outx64%" 								"C:\Program Files\corz\ffe\ffe.exe"
+#AutoIt3Wrapper_Run_After=copy /Y "%outx64%" 								"C:\Program Files\corz\ffe\ffe.exe"
 
 
 
@@ -10655,9 +10770,9 @@ endfunc
 #AutoIt3Wrapper_Run_After=mkdir     "..\ffe"
 #AutoIt3Wrapper_Run_After=mkdir     "..\ffe\Info"
 #AutoIt3Wrapper_Run_After=move /Y   "%outx64%" 							        "..\ffe\ffe.exe"
-#AutoIt3Wrapper_Run_After=copy      ".\Resources\QuickStart.txt" 	  "..\ffe\QuickStart.txt"
-#AutoIt3Wrapper_Run_After=copy      ".\Resources\ffe.ini" 					"..\ffe\Info\ffe.ini"
-#AutoIt3Wrapper_Run_After=copy      "..\Itstory.txt" 							  "..\ffe\Info\Itstory.txt"
+#AutoIt3Wrapper_Run_After=copy /Y   ".\Resources\QuickStart.txt" 	  "..\ffe\QuickStart.txt"
+#AutoIt3Wrapper_Run_After=copy /Y   ".\Resources\ffe.ini" 					"..\ffe\Info\ffe.ini"
+#AutoIt3Wrapper_Run_After=copy /Y   ".\Itstory.txt" 							  "..\ffe\Info\Itstory.txt"
 
 
 ; RELEASE..

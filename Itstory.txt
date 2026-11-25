@@ -29,6 +29,26 @@
 
 
 
+  2.5.8.0   ("Eggy Noggin")
+  
+    ~ Output file names are shortened automatically when they would make the 
+      full path too long; the start of the name is kept and the end is cut.
+    
+      When a name is shortened, a report file is created next to the converted 
+      file (same name) containing the full /intended/ name, settings, and 
+      full command-line used.
+    
+    ~ Dropping a target folder that is already too deep is refused with 
+      "Path is too long. Move your target folder to somewhere nearer the root
+      of the drive".
+    
+      The longest folder accepted depends on the file being converted: e.g.. 
+      for "something.mkv" that would be 245 characters.
+    
+      You get the same warning is you manually pick (...) an output file in a 
+      too-deep folder.
+
+
 
   2.5.7.3   ("Deep Sea Creatures")
 
