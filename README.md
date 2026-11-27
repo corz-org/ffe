@@ -41,6 +41,8 @@ Click here to go straight to the downloads!"/></a> <a name="section-Intro"></a>
 </li>
 <li>Magic Auto-Transforming Output Filename <small>(no more overwriting previous tests 'by mistake')</small>.
 </li>
+<li>Recursive operation (operate on all subfolders, and all their subfolders, and so on).
+</li>
 <li>Fully programmable FFmpeg and FFplay quick task buttons.
 </li>
 <li>Infinite fully-customizable user presets in a handy drop-down.
